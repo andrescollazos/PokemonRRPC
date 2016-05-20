@@ -1,0 +1,110 @@
+[level]
+tileset = maps/ruta1.png
+map = AAAAAAAAAAAAAAAAAAAACCCCCCCCAAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAA........AAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAA........AAAAAAAAAAAAAAAAAAAA
+      AAAA........................................AAAA
+      AAAA........................................AAAA
+      AAAA........................................AAAA
+      AAAA........................................AAAA
+      AAAA.............AA.........................AAAA
+      AAAA............AAAA........................AAAA
+      AAAA............AAAA........................AAAA
+      AAAA............AAAA........................AAAA
+      AAAA############AAAA############............AAAA
+      AAAA............AAAAPPPPPPPPPPPPPPPPPPPPPPPPAAAA
+      AAAA............AAAAPPPPPPPPPPPPPPPPPPPPPPPPAAAA
+      AAAA............AAAAPPPPPPPPPPPPPPPPPPPPPPPPAAAA
+      AAAA............AAAAPPPPPPPPPPPPPPPPPPPPPPPPAAAA
+      AAAA............AAAAPPPPPPPPPPPPPPPPPPPPPPPPAAAA
+      AAAA............AAAAPPPPPPPPPPPPPPPPPPPPPPPPAAAA
+      AAAA............AAAAPPPPPPPPPPPPPPPPPPPPPPPPAAAA
+      AAAA............AAAAPPPPPPPPPPPPPPPPPPPPPPPPAAAA
+      AAAA............AAAAPPPPPPPPPPPPPPPPPPPPPPPPAAAA
+      AAAA############AAAAPPPPPPPPPPPPPPPPPPPPPPPPAAAA
+      AAAA............AAAA........................AAAA
+      AAAA........................................AAAA
+      AAAA........................................AAAA
+      AAAA........................................AAAA
+      AAAA............................PPPPPPPPPPPPAAAA
+      AAAA............................PPPPPPPPPPPPAAAA
+      AAAA............................PPPPPPPPPPPPAAAA
+      AAAA.AA..............AA..AA..AA.PPPPPPPPPPPPAAAA
+      AAAAAAAA............AAAAAAAAAAAAPPPPPPPPPPPPAAAA
+      AAAAAAAA############AAAAAAAAAAAAPPPPPPPPPPPPAAAA
+      AAAAAAAA............AAAAAAAAAAAAPPPPPPPPPPPPAAAA
+      AAAA............................PPPPPPPPPPPPAAAA
+      AAAA............................PPPPPPPPPPPPAAAA
+      AAAA............................PPPPPPPPPPPPAAAA
+      AAAA........................................AAAA
+      AAAA........................................AAAA
+      AAAA........................................AAAA
+      AAAA........................................AAAA
+      AAAA........................................AAAA
+      AAAA####..########....######################AAAA
+      AAAA........................................AAAA
+      AAAA........................................AAAA
+      AAAA........................................AAAA
+      AAAA........................................AAAA
+      AAAA........................................AAAA
+      AAAA........................................AAAA
+      AAAA....................PPPPPPPPPPPP........AAAA
+      AAAA.AA..AA..AA..AA..AA.PPPPPPPPPPPP........AAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAPPPPPPPPPPPP........AAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAPPPPPPPPPPPP........AAAA
+      AAAAAAAAAAAAAAAAAAAAAAAAPPPPPPPPPPPP........AAAA
+      AAAA....................PPPPPPPPPPPP########AAAA
+      AAAA....................PPPPPPPPPPPP........AAAA
+      AAAA....................PPPPPPPPPPPP........AAAA
+      AAAA....................PPPPPPPPPPPP........AAAA
+      AAAA....................PPPPPPPPPPPP........AAAA
+      AAAA........................................AAAA
+      AAAA........................................AAAA
+      AAAA........................................AAAA
+      AAAA........................................AAAA
+      AAAA..............##........................AAAA
+      AAAA########......##########################AAAA
+      AAAA....PPPPPPPPPPPPPP............PPPPPPPPPPAAAA
+      AAAA....PPPPPPPPPPPPPP............PPPPPPPPPPAAAA
+      AAAA....PPPPPPPPPPPPPP............PPPPPPPPPPAAAA
+      AAAA....PPPPPPPPPPPPPP............PPPPPPPPPPAAAA
+      AAAAPPPPPPPPPPPPPP............PPPPPPPPPP....AAAA
+      AAAAPPPPPPPPPPPPPP............PPPPPPPPPP....AAAA
+      AAAAPPPPPPPPPPPPPP......PPPP..PPPPPPPPPP....AAAA
+      AAAAPPPPPPPPPPPPPP......PPPP..PPPPPPPPPP....AAAA
+      AAAAccccccccccccccccccccPPPPccccccccccccccccAAAA
+      AAAAccccccccccccccccccccPPPPccccccccccccccccAAAA
+      AAAA...................cPPPPc...............AAAA
+      AAAAAAAAAAAAAAAAAAAAAAAcPPPPcAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAcPPPPcAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAcPPPPcAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAcPPPPcAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAcppppcAAAAAAAAAAAAAAAAAAA
+scale = 4
+
+[.]
+name = floor
+
+[#]
+name = wall
+wall = True
+
+[C]
+name = ciudadverde
+state = False
+
+[A]
+name = arbol
+wall = True
+
+[P]
+name = pokemon
+state = True
+
+[c]
+name = cerca
+wall = True
+
+[p]
+name = pueblopaleta
+state = False

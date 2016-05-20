@@ -1,0 +1,60 @@
+[level]
+tileset = maps/gimnasio.png
+map = ###############################
+      ###############################
+      ###############################
+      ###############################
+      ###############################
+      ###############################
+      ###############################
+      ###############################
+      ###...PPPPPP##PPP##PPPPP....###
+      #.....PPPPPP##PPP##PPPPP.....##
+      #...PPPPPPPPPP...PPPPPPPPPP..##
+      #...PPPPPPPPPP...PPPPPPPPPP..##
+      #...PPPPPPPPPP...PPPPPPPPPP..##
+      #PPPPPPPP##..#####.##.PPPPPPP##
+      #PPPPPPPP##..#####.##.PPPPPPP##
+      #PPPPPPPP....#BBB#....PPPPPPP##
+      #PPPPPPPP.............PPPPPPP##
+      #PPPPPPPP.............PPPPPPP##
+      #PPPPPP##PPP##...##PPP##PPPPP##
+      #PPPPPP##PPP##...##PPP##PPPPP##
+      #PPPPP..................PPPPP##
+      ####PP..................PPP####
+      ####PP..................PPP####
+      #PPPPPPPP##PPP...PPP##PPPPPPP##
+      #PPPPPPPP##PPP...PP###PPPPPPP##
+      #PPPPPPPP..PPP...PPP..PPPPPPP##
+      ####PPPPP.............PPPPP####
+      ####PPPPP.............PPPPP####
+      #PPPPPPPP##PPP...PP###PPPPPPP##
+      #PPPPPPPP##PPP...PP###PPPPPPP##
+      #PPPPPPPP##PPP...PP###PPPPPPP##
+      #........###.......###.......##
+      #........###.......###.......##
+      #............................##
+      #............................##
+      #............................##
+      #............................##
+      #.............EEE............##
+scale = 2
+
+[.]
+name = floor
+tile = 0, 3
+
+[#]
+name = wall
+wall = True
+
+[B]
+name = brock
+
+[P]
+name = pokemon
+state = True
+
+[E]
+name = exit
+state = False
