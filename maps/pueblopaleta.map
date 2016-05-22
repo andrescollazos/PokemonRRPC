@@ -16,7 +16,7 @@ map = AAAAAAAAAAAAAAAAAAAAAAAA1111AAAAAAAAAAAAAAAAAAAA
       AAAA....############......############.....AAAAA
       AAAA....############......############.....AAAAA
       AAAA....####CC######......############.....AAAAA
-      AAAA........................................AAAA
+      AAAA........I...............................AAAA
       AAAA........................................AAAA
       AAAA........................................AAAA
       AAAA......................##############....AAAA
@@ -39,6 +39,8 @@ map = AAAAAAAAAAAAAAAAAAAAAAAA1111AAAAAAAAAAAAAAAAAAAA
       AAAA..........WWWWWWWW......................AAAA
       AAAA..........WWWWWWWW......................AAAA
 scale = 2
+iniciox = 13
+inicioy = 12
 
 [.]
 name = floor
