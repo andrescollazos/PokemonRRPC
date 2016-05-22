@@ -8,6 +8,8 @@ BLANCO = (255, 255, 255)
 NEGRO = (0, 0, 0)
 tamCuadro = 32 # Tamaño de cada cuadro
 tamPantalla = [527, 398]
+tamJugador = 56
+mapas = {"interior", "pueblopaleta","lab", "ruta1", "ciudadverde", "centropokemon", "tienda", "gimnasio",}
 
 class Mapa(object):
 	def __init__(self, filename):#, jugador):
@@ -43,16 +45,27 @@ class Mapa(object):
 			for fondo_y in range(0, imagen_alto/alto):
 				cuadro = (fondo_x*ancho, fondo_y*alto, ancho, alto)
 				linea.append(self.image.subsurface(cuadro))
+		# Inicio: Donde se ubica el juador al entrar en el mapa:
+		self.iniciox = int(parser.get("level", "iniciox"))
+		self.inicioy = int(parser.get("level", "inicioy"))
 
-	def get_tile(self, x, y):
-		try:
-			char = self.map[y][x]
-		except IndexError:
-			return {}
-		try:
-			return self.key[char]
-		except KeyError:
-			return {}
+class Jugador(object):
+	def __init__(self, imagen):
+		self.image = pygame.image.load(imagen).convert_alpha()
+		self.rect = self.image.get_rect()
+		self.image = pygame.transform.scale(self.image, (tamJugador*3, tamJugador*4))
+		imagen_ancho, imagen_alto = self.image.get_size()
+		self.matrizJugador = []
+		for x in range(0, 3): # Se requieren tres acciones para un movimiento
+			linea = []
+			self.matrizJugador.append(linea)
+			for y in range(0, 4): # Son cuatro las perspectivas del jugador
+				cuadro = (x*tamJugador, y*tamJugador, tamJugador, tamJugador)
+				linea.append(self.image.subsurface(cuadro))
+		self.pos = [False, False]
+
+	def dibujar(self, pantalla):
+		pantalla.blit(self.matrizJugador[1][0], self.pos)
 
 # MAIN
 if __name__=='__main__':
@@ -60,12 +73,32 @@ if __name__=='__main__':
 	pantalla = pygame.display.set_mode(tamPantalla)
 	pantalla.fill(NEGRO)
 
-	filename ="maps/ruta1.map"
+	filename ="maps/tienda.map"
 	ciudadVerde = Mapa(filename)
+
+	jugador = Jugador("red.png")
 
 	# Ciclo del juego
 	terminar = False
 	x, y = (tamPantalla[0]*ciudadVerde.scale)/tamCuadro, (tamPantalla[1]*ciudadVerde.scale)/tamCuadro
+	# Ajustar pantalla:
+	iniciox = ciudadVerde.iniciox
+	inicioy = ciudadVerde.inicioy
+	# Posicionar al jugador:
+	pos = [False, False]
+	cont = 0
+	for lst in ciudadVerde.map:
+		try:
+			pos[0] = lst.index('I')
+			break
+		except ValueError:
+			pass
+			cont += 1
+	pos[1] = cont
+	# Calcular la posición del jugador en la pantalla:
+	pos[0] = (pos[0]*ciudadVerde.scale - iniciox)*(32/ciudadVerde.scale)
+	pos[1] = (pos[1]*ciudadVerde.scale - inicioy)*(32/ciudadVerde.scale) - (tamJugador-32)
+	jugador.pos = pos
 	while not terminar:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -73,8 +106,8 @@ if __name__=='__main__':
 		for j in range(0, y+1):
 			for i in range(0, x+1):
 				try:
-					pantalla.blit(ciudadVerde.matrizMap[i][j], (i*(tamCuadro/ciudadVerde.scale), j*(tamCuadro/ciudadVerde.scale)))
+					pantalla.blit(ciudadVerde.matrizMap[i+iniciox][j+inicioy], (i*(tamCuadro/ciudadVerde.scale), j*(tamCuadro/ciudadVerde.scale)))
 				except IndexError:
 					pass
-
+		jugador.dibujar(pantalla)
 		pygame.display.flip()
