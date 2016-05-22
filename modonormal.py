@@ -1,9 +1,12 @@
+# coding=utf-8
+
 import pygame
 import ConfigParser
 
 # Constantes
 BLANCO = (255, 255, 255)
 NEGRO = (0, 0, 0)
+tamCuadro = 32 # Tamaño de cada cuadro
 tamPantalla = [527, 398]
 
 class Mapa(object):
@@ -32,8 +35,8 @@ class Mapa(object):
 		# Escalar la imagen:
 		self.image = pygame.transform.scale(self.image, (imagen_ancho*self.scale, imagen_alto*self.scale))
 		imagen_ancho, imagen_alto = self.image.get_size()
-		ancho = 32/self.scale
-		alto = 32/self.scale
+		ancho = tamCuadro/self.scale
+		alto = tamCuadro/self.scale
 		for fondo_x in range(0, imagen_ancho/ancho):
 			linea = []
 			self.matrizMap.append(linea)
@@ -60,24 +63,18 @@ if __name__=='__main__':
 	filename ="maps/ruta1.map"
 	ciudadVerde = Mapa(filename)
 
-	print "--------------------------------------------------------------------"
-	print "MAPA"
-	print "--------------------------------------------------------------------"
-	for x in ciudadVerde.map:
-		for y in x:
-			print y,
-		print ""
-
 	# Ciclo del juego
 	terminar = False
-	x, y = ciudadVerde.image.get_size()
-	x, y = x/32, y/32
+	x, y = (tamPantalla[0]*ciudadVerde.scale)/tamCuadro, (tamPantalla[1]*ciudadVerde.scale)/tamCuadro
 	while not terminar:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				terminar = True
-		for j in range(0, y):
-			for i in range(0, x):
-				pantalla.blit(ciudadVerde.matrizMap[i][j], (i*(32/ciudadVerde.scale), j*(32/ciudadVerde.scale)))
+		for j in range(0, y+1):
+			for i in range(0, x+1):
+				try:
+					pantalla.blit(ciudadVerde.matrizMap[i][j], (i*(tamCuadro/ciudadVerde.scale), j*(tamCuadro/ciudadVerde.scale)))
+				except IndexError:
+					pass
 
 		pygame.display.flip()
