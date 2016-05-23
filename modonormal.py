@@ -111,7 +111,7 @@ if __name__=='__main__':
 	print "POSICION INICIAL {0}".format(jugador.pos)
 
 	izq = der = up = down = False # Booleanos para saber si el jugador se mueve
-	movx, movy, cont = 0, 0, 0 # Contadores para la animación del movimiento del jugador
+	mov, cont = 0, 0 # Contadores para la animación del movimiento del jugador
 	# reloj
 	reloj = pygame.time.Clock()
 	total = 0
@@ -139,16 +139,16 @@ if __name__=='__main__':
 			if event.type == pygame.KEYUP:
 				if event.key == pygame.K_UP:
 					up = False
-					jugador.matrizJugador[1][1]
+					jugador.sprite = jugador.matrizJugador[1][1]
 				if event.key == pygame.K_DOWN:
 					down = False
-					jugador.matrizJugador[1][0]
+					jugador.sprite = jugador.matrizJugador[1][0]
 				if event.key == pygame.K_RIGHT:
 					der = False
-					jugador.matrizJugador[1][3]
+					jugador.sprite = jugador.matrizJugador[1][3]
 				if event.key == pygame.K_LEFT:
 					izq = False
-					jugador.matrizJugador[1][2]
+					jugador.sprite = jugador.matrizJugador[1][2]
 		# MOSTRAR MAPA EN PANTALLA:
 		for j in range(0, y+1):
 			for i in range(0, x+1):
@@ -158,61 +158,57 @@ if __name__=='__main__':
 					pass
 		# ANIMACION DEL JUGADOR AL CAMINAR
 		# CAMINAR HACIA ARRIBA:
-		if up and movy < 3:
-			jugador.sprite = jugador.matrizJugador[movy][1]
+		if up and mov < 3:
+			jugador.sprite = jugador.matrizJugador[mov][1]
 			# Como el jugador debe desplazarse 32 pixeles, en dos ciclos camina
 			# 11 pixeles y en el otro ciclo, avanza 10 -> 11+10+11 = 32
-			if movy == 1:
+			if mov == 1:
 				jugador.pos[1] -= 10
 			else:
 				jugador.pos[1] -= 11
-			movy += 1
+			mov += 1
 			# El jugador solo terminar el movimiento al soltar la tecla
-			if movy == 3: # Reinicia la animación
-				movy = 0
-				jugador.sprite = jugador.matrizJugador[1][1]
+			if mov == 3: # Reinicia la animación
+				mov = 0
 		# CAMINAR HACIA ABAJO:
-		if down and movy < 3:
-			jugador.sprite = jugador.matrizJugador[movy][0]
+		if down and mov < 3:
+			jugador.sprite = jugador.matrizJugador[mov][0]
 			# Como el jugador debe desplazarse 32 pixeles, en dos ciclos camina
 			# 11 pixeles y en el otro ciclo, avanza 10 -> 11+10+11 = 32
-			if movy == 1:
+			if mov == 1:
 				jugador.pos[1] += 10
 			else:
 				jugador.pos[1] += 11
-			movy += 1
+			mov += 1
 			# El jugador solo terminar el movimiento al soltar la tecla
-			if movy == 3: # Reinicia la animación
-				movy = 0
-				jugador.sprite = jugador.matrizJugador[1][0]
+			if mov == 3: # Reinicia la animación
+				mov = 0
 		# CAMINAR HACIA LA DERECHA:
-		if der and movy < 3:
-			jugador.sprite = jugador.matrizJugador[movy][3]
+		if der and mov < 3:
+			jugador.sprite = jugador.matrizJugador[mov][3]
 			# Como el jugador debe desplazarse 32 pixeles, en dos ciclos camina
 			# 11 pixeles y en el otro ciclo, avanza 10 -> 11+10+11 = 32
-			if movy == 1:
+			if mov == 1:
 				jugador.pos[0] += 10
 			else:
 				jugador.pos[0] += 11
-			movy += 1
+			mov += 1
 			# El jugador solo terminar el movimiento al soltar la tecla
-			if movy == 3: # Reinicia la animación
-				movy = 0
-				jugador.sprite = jugador.matrizJugador[1][3]
+			if mov == 3: # Reinicia la animación
+				mov = 0
 		# CAMINAR HACIA LA IZQUIERDA:
-		if izq and movy < 3:
-			jugador.sprite = jugador.matrizJugador[movy][2]
+		if izq and mov < 3:
+			jugador.sprite = jugador.matrizJugador[mov][2]
 			# Como el jugador debe desplazarse 32 pixeles, en dos ciclos camina
 			# 11 pixeles y en el otro ciclo, avanza 10 -> 11+10+11 = 32
-			if movy == 1:
+			if mov == 1:
 				jugador.pos[0] -= 10
 			else:
 				jugador.pos[0] -= 11
-			movy += 1
+			mov += 1
 			# El jugador solo terminar el movimiento al soltar la tecla
-			if movy == 3: # Reinicia la animación
-				movy = 0
-				jugador.sprite = jugador.matrizJugador[1][2]
+			if mov == 3: # Reinicia la animación
+				mov = 0
 		reloj.tick(10)
 		jugador.dibujar(pantalla)
 		pygame.display.flip()
