@@ -71,6 +71,24 @@ class Jugador(object):
 	def dibujar(self, pantalla):
 		pantalla.blit(self.sprite, self.pos)
 
+	# SABER SI HAY UN MURO O ALGUN OBJETO QUE NO PERMITA CAMINAR AL JUGADOR:
+	# retorna vector de booleanos -> [Up, Down, Left, Rigth]
+	def is_a_wall(self, city):
+		# Transformar posicion de la pantalla, en posicion de la matriz del mapa
+		posx = (((self.pos[0]*city.scale)/32) + city.iniciox)/city.scale
+		posy = ((((self.pos[1] + (tamJugador-32))*city.scale)/32) + city.inicioy)/city.scale
+		print city.map[posx][posy]
+		# Izquierda y derecha:
+		if city.map[posx - 1][posy] == "#" or city.map[posx - 1][posy] == "A":
+			return [False, False, True, False]
+		if city.map[posx + 1][posy] == "#" or city.map[posx + 1][posy] == "A":
+			return [False, False, False, True]
+		if city.map[posx][posy - 1] == "#" or city.map[posx][posy - 1] == "A":
+			return [True, False, False, False]
+		if city.map[posx][posy + 1] == "#" or city.map[posx][posy + 1] == "A":
+			return [False, True, False, False]
+		return [False, False, False, False]
+
 # MAIN
 if __name__=='__main__':
 	pygame.init()
@@ -94,7 +112,6 @@ if __name__=='__main__':
 	cont = 0
 	for lst in ciudadVerde.map:
 		try:
-			print cont
 			pos[0] = lst.index('I')
 			break
 		except ValueError:
@@ -128,6 +145,7 @@ if __name__=='__main__':
 				# MOVIMIENTOS DEL JUGADOR CON EL TECLADO:
 				# Mover arriba:
 				if event.key == pygame.K_UP:
+					print jugador.is_a_wall(ciudadVerde)
 					up = True
 					actup = True
 				# Mover abajo:
