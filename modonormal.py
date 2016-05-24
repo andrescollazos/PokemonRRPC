@@ -73,19 +73,18 @@ class Jugador(object):
 
 	# SABER SI HAY UN MURO O ALGUN OBJETO QUE NO PERMITA CAMINAR AL JUGADOR:
 	# retorna vector de booleanos -> [Up, Down, Left, Rigth]
-	def is_a_wall(self, city):
+	def is_a_wall(self, city, direc):
 		# Transformar posicion de la pantalla, en posicion de la matriz del mapa
 		posx = (((self.pos[0]*city.scale)/32) + city.iniciox)/city.scale
 		posy = ((((self.pos[1] + (tamJugador-32))*city.scale)/32) + city.inicioy)/city.scale
-		print city.map[posx][posy]
 		# Izquierda y derecha:
-		if city.map[posx - 1][posy] == "#" or city.map[posx - 1][posy] == "A":
+		if (city.map[posy][posx - 1] == "#" or city.map[posy][posx - 1] == "A") and direc == "left":
 			return [False, False, True, False]
-		if city.map[posx + 1][posy] == "#" or city.map[posx + 1][posy] == "A":
+		if (city.map[posy][posx + 1] == "#" or city.map[posy][posx + 1] == "A") and direc == "rigth":
 			return [False, False, False, True]
-		if city.map[posx][posy - 1] == "#" or city.map[posx][posy - 1] == "A":
+		if (city.map[posy - 1][posx] == "#" or city.map[posy - 1][posx] == "A") and direc == "up":
 			return [True, False, False, False]
-		if city.map[posx][posy + 1] == "#" or city.map[posx][posy + 1] == "A":
+		if (city.map[posy + 1][posx] == "#" or city.map[posy + 1][posx] == "A") and direc == "down":
 			return [False, True, False, False]
 		return [False, False, False, False]
 
@@ -123,10 +122,6 @@ if __name__=='__main__':
 	pos[1] = (pos[1]*ciudadVerde.scale - inicioy)*(32/ciudadVerde.scale) - (tamJugador-32)
 	jugador.pos = pos
 
-	#print "POSICION DEL JUGADOR: ", jugador.pos
-	#print "Posicion pantalla:\t{0},{1}".format(jugador.pos[0]/16, jugador.pos[1]/16)
-	#print "Posicion matriz:\t{0},{1}".format((jugador.pos[0]/(32/ciudadVerde.scale)+iniciox)/ciudadVerde.scale, (jugador.pos[1]/(32/ciudadVerde.scale)+inicioy)/ciudadVerde.scale)
-
 	left = rigth = up = down = False # Booleanos para saber si el jugador se mueve
 	actleft = actrigth = actup = actdown = False # Booleanos para terminar un movimiento
 	movleft = movrigth = movup = movdown = 0# Contadores para la animación del movimiento del jugador
@@ -145,21 +140,24 @@ if __name__=='__main__':
 				# MOVIMIENTOS DEL JUGADOR CON EL TECLADO:
 				# Mover arriba:
 				if event.key == pygame.K_UP:
-					print jugador.is_a_wall(ciudadVerde)
-					up = True
-					actup = True
+					if not([True, False, False, False] == jugador.is_a_wall(ciudadVerde, "up")):
+						up = True
+						actup = True
 				# Mover abajo:
 				if event.key == pygame.K_DOWN:
-					down = True
-					actdown = True
+					if not([False, True, False, False] == jugador.is_a_wall(ciudadVerde, "down")):
+						down = True
+						actdown = True
 				# Mover a la derecha:
 				if event.key == pygame.K_RIGHT:
-					rigth = True
-					actrigth = True
+					if not([False, False, False, True] == jugador.is_a_wall(ciudadVerde, "rigth")):
+						rigth = True
+						actrigth = True
 				# Mover a la leftuierda:
 				if event.key == pygame.K_LEFT:
-					left = True
-					actleft = True
+					if not([False, False, True, False] == jugador.is_a_wall(ciudadVerde, "left")):
+						left = True
+						actleft = True
 			# CONTROLES CUANDO EL JUGADOR SUELTA UNA TECLA
 			if event.type == pygame.KEYUP:
 				if event.key == pygame.K_UP:
@@ -198,6 +196,8 @@ if __name__=='__main__':
 			if movup == 3: # Reinicia la animación
 				movup = 0
 				actup = False
+				if up == True and ([True, False, False, False] == jugador.is_a_wall(ciudadVerde, "up")):
+					up = False
 		# CAMINAR HACIA ABAJO:
 		if (down and movdown < 3) or actdown:
 			jugador.sprite = jugador.matrizJugador[movdown][0]
@@ -207,6 +207,8 @@ if __name__=='__main__':
 			if movdown == 3: # Reinicia la animación
 				movdown = 0
 				actdown = False
+				if down == True and ([False, True, False, False] == jugador.is_a_wall(ciudadVerde, "down")):
+					down = False
 		# CAMINAR HACIA LA DERECHA:
 		if (rigth and movrigth < 3) or actrigth:
 			jugador.sprite = jugador.matrizJugador[movrigth][3]
@@ -216,6 +218,8 @@ if __name__=='__main__':
 			if movrigth == 3: # Reinicia la animación
 				movrigth = 0
 				actrigth = False
+				if rigth == True and ([False, False, False, True] == jugador.is_a_wall(ciudadVerde, "rigth")):
+					rigth = False
 		# CAMINAR HACIA LA IZQUIERDA:
 		if (left and movleft < 3) or actleft:
 			jugador.sprite = jugador.matrizJugador[movleft][2]
@@ -225,6 +229,8 @@ if __name__=='__main__':
 			if movleft == 3: # Reinicia la animación
 				movleft = 0
 				actleft = False
+				if left == True and ([False, False, True, False] == jugador.is_a_wall(ciudadVerde, "left")):
+					left = False
 		#-----------------------------------------------------------------------
 
 
