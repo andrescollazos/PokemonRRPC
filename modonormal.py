@@ -113,7 +113,7 @@ if __name__=='__main__':
 	pantalla = pygame.display.set_mode(tamPantalla)
 	pantalla.fill(NEGRO)
 
-	filename ="maps/ciudadverde.map"
+	filename ="maps/tienda.map"
 	ciudadVerde = Mapa(filename)
 
 	jugador = Jugador("red.png")
@@ -216,8 +216,8 @@ if __name__=='__main__':
 			# - not([True, False, False, False] == jugador.is_a_wall(ciudadVerde, "up"))
 			#   esta condición indica que la pantalla tampoco se desplazara si hay un objeto con el cual chocar
 			if not([True, False, False, False] == jugador.is_a_wall(ciudadVerde, "up")):
-				# print "{0} <= 6: {1}".format(lim[1], lim[1] <= 6)
-				if not(lim[1] <= 6):
+				print "{0} <= 6: {1}".format(lim[1], lim[1] <= 2)
+				if (not(lim[1] <= 2))*bool(ciudadVerde.velocidad):
 					ciudadVerde.inicioy -= ciudadVerde.velocidad
 				else:
 					jugador.pos[1] -= 11 - 1*(movup%2) # mov%2 -> 11 + 10 +11 = 32 px
@@ -245,7 +245,7 @@ if __name__=='__main__':
 			#   esta condición indica que la pantalla tampoco se desplace si hay un objeto con el cual chocar
 			if not([False, True, False, False] == jugador.is_a_wall(ciudadVerde, "down")):
 				print "{0} - {1} = {3} <= 6: {2}".format(len(ciudadVerde.map), lim[1], lim[1] <= 60, len(ciudadVerde.map) - lim[1])
-				if (len(ciudadVerde.map) - lim[1] <= 60):
+				if ((len(ciudadVerde.map) - lim[1] <= len(ciudadVerde.map) - 1)*bool(ciudadVerde.velocidad)):
 					ciudadVerde.inicioy += ciudadVerde.velocidad
 				else:
 					jugador.pos[1] += 11 - 1*(movdown%2) # mov%2 -> 11 + 10 +11 = 32 px
@@ -269,7 +269,7 @@ if __name__=='__main__':
 			# - not([False, False, False, True] == jugador.is_a_wall(ciudadVerde, "rigth"))
 			#   esta condición indica que la pantalla tampoco se desplace si hay un objeto con el cual chocar
 			if not([False, False, False, True] == jugador.is_a_wall(ciudadVerde, "rigth")):
-				if not(len(ciudadVerde.map[0]) - lim[0] <= 6):
+				if (not(len(ciudadVerde.map[0]) - lim[0] <= 6))*bool(ciudadVerde.velocidad):
 					ciudadVerde.iniciox += ciudadVerde.velocidad - 1*(movrigth%2)*bool(ciudadVerde.velocidad)
 				else:
 					jugador.pos[0] += 11 - 1*(movrigth%2) # mov%2 -> 11 + 10 +11 = 32 px
@@ -295,7 +295,7 @@ if __name__=='__main__':
 			# - not([False, False, True, False] == jugador.is_a_wall(ciudadVerde, "left"))
 			#   esta condición indica que la pantalla no se desplace si hay un objeto con el cual chocar
 			if not([False, False, True, False] == jugador.is_a_wall(ciudadVerde, "left")):
-				if not(lim[0] <= 6):
+				if (not(lim[0] <= 6))*bool(ciudadVerde.velocidad):
 					ciudadVerde.iniciox -= ciudadVerde.velocidad - 1*(movleft%2)*bool(ciudadVerde.velocidad)
 				else:
 					jugador.pos[0] -= 11 - 1*(movleft%2) # mov%2 -> 11 + 10 +11 = 32 px
