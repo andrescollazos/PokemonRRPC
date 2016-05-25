@@ -1,12 +1,12 @@
 [level]
 tileset = maps/pueblopaleta.png
-map = AAAAAAAAAAAAAAAAAAAAAAAA1111AAAAAAAAAAAAAAAAAAAA
-      AAAAAAAAAAAAAAAAAAAAAAAA....AAAAAAAAAAAAAAAAAAAA
-      AAAAAAAAAAAAAAAAAAAAAAAA....AAAAAAAAAAAAAAAAAAAA
+map = AAAAAAAAAAAAAAAAAAAAAAAA####AAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAA1111AAAAAAAAAAAAAAAAAAAA
+      AAAAAAAAAAAAAAAAAAAAAAAA1111AAAAAAAAAAAAAAAAAAAA
       AAAA........................................AAAA
       AAAA........................................AAAA
       AAAA........................................AAAA
-      AAAA........................................AAAA
+      AAAA......##########........##########......AAAA
       AAAA......##########........##########......AAAA
       AAAA......##########........##########......AAAA
       AAAA......##########........##########......AAAA
@@ -36,11 +36,11 @@ map = AAAAAAAAAAAAAAAAAAAAAAAA1111AAAAAAAAAAAAAAAAAAAA
       AAAA......................cccccc##cccc......AAAA
       AAAA..........WWWWWWWW......................AAAA
       AAAA..........WWWWWWWW......................AAAA
-      AAAA..........WWWWWWWW......................AAAA
-      AAAA..........WWWWWWWW......................AAAA
+      AAAA##########WWWWWWWW######################AAAA
+      AAAA##########WWWWWWWW######################AAAA
 scale = 2
-iniciox = 13
-inicioy = 12
+iniciox = 10
+inicioy = 20
 
 [.]
 name = floor
