@@ -39,7 +39,7 @@ map = AAAAAAAAAAAAAAAAAAAAAAAA####AAAAAAAAAAAAAAAAAAAA
       AAAA##########WWWWWWWW######################AAAA
       AAAA##########WWWWWWWW######################AAAA
 scale = 2
-velocidad = 3
+velocidad = 2
 iniciox = 10
 inicioy = 20
 

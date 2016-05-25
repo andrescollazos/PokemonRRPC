@@ -20,7 +20,7 @@ map = ###################
       ##.......I........#
       #########EE########
 scale = 1
-velocidad = 2
+velocidad = 1
 iniciox = 1
 inicioy = 7
 
