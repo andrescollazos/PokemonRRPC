@@ -13,6 +13,7 @@ map = ################
       #..............#
       #.....EE.......#
 scale = 1
+velocidad = 0
 iniciox = 0
 inicioy = 0
 
