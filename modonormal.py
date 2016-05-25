@@ -78,15 +78,32 @@ class Jugador(object):
 		posx = (((self.pos[0]*city.scale)/32) + city.iniciox)/city.scale
 		posy = ((((self.pos[1] + (tamJugador-32))*city.scale)/32) + city.inicioy)/city.scale
 		# Izquierda y derecha:
-		if (city.map[posy][posx - 1] == "#" or city.map[posy][posx - 1] == "A") and direc == "left":
-			return [False, False, True, False]
-		if (city.map[posy][posx + 1] == "#" or city.map[posy][posx + 1] == "A") and direc == "rigth":
-			return [False, False, False, True]
-		if (city.map[posy - 1][posx] == "#" or city.map[posy - 1][posx] == "A") and direc == "up":
-			return [True, False, False, False]
-		if (city.map[posy + 1][posx] == "#" or city.map[posy + 1][posx] == "A") and direc == "down":
-			return [False, True, False, False]
+		try:
+			if (city.map[posy][posx - 1] == "#" or city.map[posy][posx - 1] == "A" or city.map[posy][posx - 1] == "c" or city.map[posy][posx - 1] == "W") and direc == "left":
+				return [False, False, True, False]
+		except IndexError:
+			pass
+		try:
+			if (city.map[posy][posx + 1] == "#" or city.map[posy][posx + 1] == "A" or city.map[posy][posx + 1] == "c" or city.map[posy][posx + 1] == "W") and direc == "rigth":
+				return [False, False, False, True]
+		except IndexError:
+			pass
+		try:
+			if (city.map[posy - 1][posx] == "#" or city.map[posy - 1][posx] == "A" or city.map[posy - 1][posx] == "c" or city.map[posy - 1][posx] == "W") and direc == "up":
+				return [True, False, False, False]
+		except IndexError:
+			pass
+		try:
+			if (city.map[posy + 1][posx] == "#" or city.map[posy + 1][posx] == "A" or city.map[posy + 1][posx] == "c" or city.map[posy + 1][posx] == "W") and direc == "down":
+				return [False, True, False, False]
+		except IndexError:
+			pass
 		return [False, False, False, False]
+
+	def transfM(self, city):
+		posx = (((self.pos[0]*city.scale)/32) + city.iniciox)/city.scale
+		posy = ((((self.pos[1] + (tamJugador-32))*city.scale)/32) + city.inicioy)/city.scale
+		return posx, posy
 
 # MAIN
 if __name__=='__main__':
@@ -127,7 +144,7 @@ if __name__=='__main__':
 	movleft = movrigth = movup = movdown = 0# Contadores para la animación del movimiento del jugador
 	# reloj
 	reloj = pygame.time.Clock()
-	total = 0
+	total = 1
 	while not terminar:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -175,10 +192,11 @@ if __name__=='__main__':
 
 		#-----------------------------------------------------------------------
 		# MOSTRAR MAPA EN PANTALLA:
+		pantalla.fill(NEGRO)
 		for j in range(0, y+1):
 			for i in range(0, x+1):
 				try:
-					pantalla.blit(ciudadVerde.matrizMap[i+iniciox][j+inicioy], (i*(tamCuadro/ciudadVerde.scale), j*(tamCuadro/ciudadVerde.scale)))
+					pantalla.blit(ciudadVerde.matrizMap[i+ciudadVerde.iniciox][j+ciudadVerde.inicioy], (i*(tamCuadro/ciudadVerde.scale), j*(tamCuadro/ciudadVerde.scale)))
 				except IndexError:
 					pass
 		#-----------------------------------------------------------------------
@@ -192,47 +210,86 @@ if __name__=='__main__':
 			jugador.sprite = jugador.matrizJugador[movup][1]
 			jugador.pos[1] -= 11 - 1*(movup%2) # mov%2 -> 11 + 10 +11 = 32 px
 			movup += 1
+			# Calcular que tan cerca esta el personaje de los limites del mapa:
+			lim = jugador.transfM(ciudadVerde)
+			print "Posicion [{0},{1}]".format(lim[0], lim[1])
+			# - not(lim[1] <= 6) -> Si esta cerca del borde superior
+			# - not([True, False, False, False] == jugador.is_a_wall(ciudadVerde, "up"))
+			#   esta condición indica que la pantalla tampoco se desplazara si hay un objeto con el cual chocar
+			if not(lim[1] <= 6) and not([True, False, False, False] == jugador.is_a_wall(ciudadVerde, "up")):
+				ciudadVerde.inicioy -= 3
 			# El jugador solo termina el movimiento al soltar la tecla
 			if movup == 3: # Reinicia la animación
 				movup = 0
 				actup = False
+				#ciudadVerde.inicioy -= 4
 				if up == True and ([True, False, False, False] == jugador.is_a_wall(ciudadVerde, "up")):
 					up = False
+
 		# CAMINAR HACIA ABAJO:
 		if (down and movdown < 3) or actdown:
 			jugador.sprite = jugador.matrizJugador[movdown][0]
 			jugador.pos[1] += 11 - 1*(movdown%2) # mov%2 -> 11 + 10 +11 = 32 px
 			movdown += 1
+			# Calcular que tan cerca esta el personaje de los limites del mapa:
+			lim = jugador.transfM(ciudadVerde)
+			print "Posicion [{0},{1}]".format(lim[0], lim[1])
+			# - not(len(ciudadVerde.map) - lim[1] <= 6) -> Si esta cerca del borde inferior
+			# - not([False, True, False, False] == jugador.is_a_wall(ciudadVerde, "down"))
+			#   esta condición indica que la pantalla tampoco se desplace si hay un objeto con el cual chocar
+			if (len(ciudadVerde.map) - lim[1] <= 60) and not([False, True, False, False] == jugador.is_a_wall(ciudadVerde, "down")):
+				ciudadVerde.inicioy += 3
 			# El jugador solo termina el movimiento al soltar la tecla
 			if movdown == 3: # Reinicia la animación
 				movdown = 0
 				actdown = False
 				if down == True and ([False, True, False, False] == jugador.is_a_wall(ciudadVerde, "down")):
 					down = False
+
 		# CAMINAR HACIA LA DERECHA:
 		if (rigth and movrigth < 3) or actrigth:
 			jugador.sprite = jugador.matrizJugador[movrigth][3]
 			jugador.pos[0] += 11 - 1*(movrigth%2) # mov%2 -> 11 + 10 +11 = 32 px
 			movrigth += 1
+			# Calcular que tan cerca esta el personaje de los limites del mapa:
+			lim = jugador.transfM(ciudadVerde)
+			print "Posicion [{0},{1}]".format(lim[0], lim[1])
+			# - not(len(ciudadVerde.map[0]) - lim[0] <= 6) -> Si esta cerca del borde derecho
+			# - not([False, False, False, True] == jugador.is_a_wall(ciudadVerde, "rigth"))
+			#   esta condición indica que la pantalla tampoco se desplace si hay un objeto con el cual chocar
+			if not(len(ciudadVerde.map[0]) - lim[0] <= 6) and not([False, False, False, True] == jugador.is_a_wall(ciudadVerde, "rigth")):
+				ciudadVerde.iniciox += 3 - 1*(movrigth%2)
 			# El jugador solo termina el movimiento al soltar la tecla
 			if movrigth == 3: # Reinicia la animación
 				movrigth = 0
-				actrigth = False
+				actrigth = False # Booleano que sirve para terminar la animacion
+				# Si el jugador tiene presionada la tecla, pero a su derecha se encuentra
+				# un muro, arbol o cerca, no podra continuar caminando
 				if rigth == True and ([False, False, False, True] == jugador.is_a_wall(ciudadVerde, "rigth")):
 					rigth = False
+
 		# CAMINAR HACIA LA IZQUIERDA:
 		if (left and movleft < 3) or actleft:
 			jugador.sprite = jugador.matrizJugador[movleft][2]
 			jugador.pos[0] -= 11 - 1*(movleft%2) # mov%2 -> 11 + 10 +11 = 32 px
 			movleft += 1
+			# Calcular que tan cerca esta el personaje de los limites del mapa:
+			lim = jugador.transfM(ciudadVerde)
+			print "Posicion [{0},{1}]".format(lim[0], lim[1])
+			# - not(lim[0] <= 6) -> Si esta cerca del limite izquierdo del mapa
+			# - not([False, False, True, False] == jugador.is_a_wall(ciudadVerde, "left"))
+			#   esta condición indica que la pantalla no se desplace si hay un objeto con el cual chocar
+			if not(lim[0] <= 6) and not([False, False, True, False] == jugador.is_a_wall(ciudadVerde, "left")):
+				ciudadVerde.iniciox -= 3 - 1*(movrigth%2)
 			# El jugador solo terminar el movimiento al soltar la tecla
 			if movleft == 3: # Reinicia la animación
 				movleft = 0
-				actleft = False
+				actleft = False # Booleano que sirve para terminar la animacion
+				# Si el jugador tiene presionada la tecla, pero a su izquierda se encuentra
+				# un muro, arbol o cerca, no podra continuar caminando
 				if left == True and ([False, False, True, False] == jugador.is_a_wall(ciudadVerde, "left")):
 					left = False
 		#-----------------------------------------------------------------------
-
 
 		reloj.tick(10)
 		jugador.dibujar(pantalla)
