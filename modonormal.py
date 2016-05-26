@@ -10,31 +10,31 @@ NEGRO = (0, 0, 0)
 tamCuadro = 32 # Tamaño de cada cuadro
 tamPantalla = [527, 398]
 tamJugador = 48
-mapas = {"interior", "pueblopaleta","lab", "ruta1", "ciudadverde", "centropokemon", "tienda", "gimnasio",}
+mapas = ['centropokemon', 'ciudadverde', 'gimnasio', 'interior', 'lab', 'pueblopaleta', 'ruta1', 'tienda']
 
 class Mapa(object):
 	def __init__(self, filename):#, jugador):
 		# Elementos propios del mapa:
 		self.map = [] # Matriz que contiene el mapa
 		self.key = {}
-		parser = ConfigParser.ConfigParser()
-		parser.read(filename)
+		self.parser = ConfigParser.ConfigParser()
+		self.parser.read(filename)
         # Cargar mapa codifiado:
-		self.map = parser.get("level", "map").split("\n")
-		for section in parser.sections():
+		self.map = self.parser.get("level", "map").split("\n")
+		for section in self.parser.sections():
 			if len(section) == 1:
-				desc = dict(parser.items(section))
+				desc = dict(self.parser.items(section))
 				self.key[section] = desc
 		self.width = len(self.map[0])
 		self.height = len(self.map)
 		#-----------------------------------------------------------------------
 		# Imagen del mapa:
-		self.tileset = parser.get("level", "tileset")
+		self.tileset = self.parser.get("level", "tileset")
 		self.image = pygame.image.load(self.tileset)#.convert_alpha()
 		# Obtener dimensiones del mapa
 		imagen_ancho, imagen_alto = self.image.get_size()
 		self.matrizMap = [] # Matriz que relaciona el mapa con la imagen
-		self.scale = int(parser.get("level", "scale")) # Saber el tamanyo de cada elemento
+		self.scale = int(self.parser.get("level", "scale")) # Saber el tamanyo de cada elemento
 		# Escalar la imagen:
 		self.image = pygame.transform.scale(self.image, (imagen_ancho*self.scale, imagen_alto*self.scale))
 		imagen_ancho, imagen_alto = self.image.get_size()
@@ -47,10 +47,42 @@ class Mapa(object):
 				cuadro = (fondo_x*ancho, fondo_y*alto, ancho, alto)
 				linea.append(self.image.subsurface(cuadro))
 		# Inicio: Donde se ubica el juador al entrar en el mapa:
-		self.iniciox = int(parser.get("level", "iniciox"))
-		self.inicioy = int(parser.get("level", "inicioy"))
+		self.iniciox = int(self.parser.get("level", "iniciox"))
+		self.inicioy = int(self.parser.get("level", "inicioy"))
 		# Velocidad de la pantalla:
-		self.velocidad = int(parser.get("level", "velocidad"))
+		self.velocidad = int(self.parser.get("level", "velocidad"))
+
+	# Funcion que permite buscar una letra en la matriz del mapa:
+	def buscarL(self, letra):
+		cont, pos = 0, [False, False]
+		for lst in self.map:
+			try:
+				pos[0] = lst.index(letra)
+				break
+			except ValueError:
+				cont += 1
+		pos[1] = cont
+		return pos
+
+	# Reemplazar un elemento por otro en la matriz del mapa:
+	def reemplazarElem(self, letra, pos, letrai='.'):
+		pos_vieja = self.buscarL(letra)
+		# Se crea variable temporal para poder modificar la cadena (fila de la matriz)
+		tempLst = self.map[pos_vieja[1]]
+		tempLst = list(tempLst) # Se convierte la cadena en lista
+		tempLst[pos_vieja[0]] = letrai # Se modifica elemento de la lista
+		tempLst = ''.join(tempLst) # Se convierte la lista a cadena
+		self.map[pos_vieja[1]] = tempLst # Y se asigna la cadena a su respectiva fila
+
+		# Se crea variable temporal para poder modificar la cadena (fila de la matriz)
+		tempLst = self.map[pos[0]]
+		tempLst = list(tempLst) # Se convierte la cadena en lista
+		tempLst[pos[1]] = letra # Se modifica elemento de la lista
+		tempLst = ''.join(tempLst) # Se convierte la lista a cadena
+		self.map[pos[0]] = tempLst # Y se asigna la cadena a su respectiva fila
+
+		# Se modifica el mapa:
+		self.parser.set("level", "map", self.map)
 
 class Jugador(object):
 	def __init__(self, imagen):
@@ -68,6 +100,14 @@ class Jugador(object):
 				linea.append(self.image.subsurface(cuadro))
 		self.pos = [False, False]
 		self.sprite = self.matrizJugador[1][0]
+
+	# UBICAR JUGADOR EN LA PANTALLA:
+	def ubicar(self, city):
+		pos = city.buscarL('I')
+		# Calcular la posición del jugador en la pantalla:
+		pos[0] = (pos[0]*city.scale - city.iniciox)*(32/city.scale)
+		pos[1] = (pos[1]*city.scale - city.inicioy)*(32/city.scale) - (tamJugador-32)
+		self.pos = pos
 
 	# MOSTRAR EN PANTALLA EL JUGADOR
 	def dibujar(self, pantalla):
@@ -108,42 +148,30 @@ class Jugador(object):
 		return posx, posy
 
 # MAIN
+# def main(filename):
 if __name__=='__main__':
+	# Parametros iniciales:
 	pygame.init()
 	pantalla = pygame.display.set_mode(tamPantalla)
 	pantalla.fill(NEGRO)
 
-	filename ="maps/tienda.map"
+	filename ="maps/interior.map"
 	ciudadVerde = Mapa(filename)
-
 	jugador = Jugador("red.png")
-	#jugador.matrizMap = ciudadVerde.map
-
-	# Ciclo del juego
-	terminar = False
-	x, y = (tamPantalla[0]*ciudadVerde.scale)/tamCuadro, (tamPantalla[1]*ciudadVerde.scale)/tamCuadro
 	# Posicionar al jugador:
-	pos = [False, False]
-	cont = 0
-	for lst in ciudadVerde.map:
-		try:
-			pos[0] = lst.index('I')
-			break
-		except ValueError:
-			pass
-			cont += 1
-	pos[1] = cont
-	# Calcular la posición del jugador en la pantalla:
-	pos[0] = (pos[0]*ciudadVerde.scale - ciudadVerde.iniciox)*(32/ciudadVerde.scale)
-	pos[1] = (pos[1]*ciudadVerde.scale - ciudadVerde.inicioy)*(32/ciudadVerde.scale) - (tamJugador-32)
-	jugador.pos = pos
+	jugador.ubicar(ciudadVerde)
 
+	# x, y -> Cantidad de ciclos para pintar el mapa a realizar:
+	x, y = (tamPantalla[0]*ciudadVerde.scale)/tamCuadro, (tamPantalla[1]*ciudadVerde.scale)/tamCuadro
 	left = rigth = up = down = False # Booleanos para saber si el jugador se mueve
 	actleft = actrigth = actup = actdown = False # Booleanos para terminar un movimiento
 	movleft = movrigth = movup = movdown = 0# Contadores para la animación del movimiento del jugador
+	posIant = [False, False] # Conocer la posición de inicio anterior (Cambiar de mapa)
+
+	# Ciclo del juego
+	terminar = False
 	# reloj
 	reloj = pygame.time.Clock()
-	total = 1
 	while not terminar:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -191,6 +219,7 @@ if __name__=='__main__':
 
 		#-----------------------------------------------------------------------
 		# MOSTRAR MAPA EN PANTALLA:
+		x, y = (tamPantalla[0]*ciudadVerde.scale)/tamCuadro, (tamPantalla[1]*ciudadVerde.scale)/tamCuadro
 		pantalla.fill(NEGRO)
 		for j in range(0, y+1):
 			for i in range(0, x+1):
@@ -309,6 +338,82 @@ if __name__=='__main__':
 				if left == True and ([False, False, True, False] == jugador.is_a_wall(ciudadVerde, "left")):
 					left = False
 		#-----------------------------------------------------------------------
+
+		#-----------------------------------------------------------------------
+		# CAMBIAR DE MAPA O ENTRAR A COMBATE: <orden alfabetico>
+		#-----------------------------------------------------------------------
+		posx, posy = jugador.transfM(ciudadVerde)
+		#print "Elemento act: \'{0}\'".format(ciudadVerde.map[posy][posx])
+
+		# Centro de salud pokemon:
+		if ciudadVerde.map[posy][posx] == 'S':
+			posIant = [posx, posy]
+			ciudadVerde.reemplazarElem("I", posIant)
+			filename = 'maps/'+ mapas[0] + '.map'
+			ciudadVerde = Mapa(filename)
+			jugador.ubicar(ciudadVerde)
+
+		# Ciudad Verde:
+		elif ciudadVerde.map[posy][posx] == 'C':
+			posIant = [posx, posy]
+			ciudadVerde.reemplazarElem("I", posIant)
+			filename = 'maps/'+ mapas[1] + '.map'
+			ciudadVerde = Mapa(filename)
+			jugador.ubicar(ciudadVerde)
+
+		# Gimnasio:
+		elif ciudadVerde.map[posy][posx] == 'G':
+			posIant = [posx, posy]
+			ciudadVerde.reemplazarElem("I", posIant)
+			filename = 'maps/'+ mapas[2] + '.map'
+			ciudadVerde = Mapa(filename)
+			jugador.ubicar(ciudadVerde)
+
+		# Interior de la casa:
+		elif ciudadVerde.map[posy][posx] == 'i':
+			posIant = [posx, posy]
+			ciudadVerde.reemplazarElem("I", posIant)
+			filename = 'maps/'+ mapas[3] + '.map'
+			ciudadVerde = Mapa(filename)
+			jugador.ubicar(ciudadVerde)
+
+		# Laboratorio:
+		elif ciudadVerde.map[posy][posx] == 'L':
+			posIant = [posx, posy]
+			ciudadVerde.reemplazarElem("I", posIant)
+			filename = 'maps/'+ mapas[4] + '.map'
+			ciudadVerde = Mapa(filename)
+			jugador.ubicar(ciudadVerde)
+
+		# Pueblo paleta:
+		elif ciudadVerde.map[posy][posx] == 'p':
+			posIant = [posx, posy]
+			ciudadVerde.reemplazarElem("I", posIant)
+			filename = 'maps/'+ mapas[5] + '.map'
+			ciudadVerde = Mapa(filename)
+			jugador.ubicar(ciudadVerde)
+
+		# Ruta 1:
+		elif ciudadVerde.map[posy][posx] == '1':
+			posIant = [posx, posy]
+			ciudadVerde.reemplazarElem("I", posIant)
+			filename = 'maps/'+ mapas[6] + '.map'
+			ciudadVerde = Mapa(filename)
+			jugador.ubicar(ciudadVerde)
+
+		# Tienda:
+		elif ciudadVerde.map[posy][posx] == 'T':
+			posIant = [posx, posy]
+			ciudadVerde.reemplazarElem("I", posIant)
+			filename = 'maps/'+ mapas[7] + '.map'
+			ciudadVerde = Mapa(filename)
+			jugador.ubicar(ciudadVerde)
+
+		# ----------------------------------------------------------------------
+		# ENTRAR EN COMBATE:
+		elif ciudadVerde.map[posy][posx] == 'P':
+			print "HAS ENTRADO A LA BATALLA POKEMON"
+
 
 		reloj.tick(10)
 		jugador.dibujar(pantalla)
