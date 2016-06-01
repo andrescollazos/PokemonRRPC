@@ -10,7 +10,6 @@ NEGRO = (0, 0, 0)
 tamCuadro = 32 # Tamaño de cada cuadro
 tamPantalla = [527, 398]
 tamJugador = 48
-mapas = ['centropokemon', 'ciudadverde', 'gimnasio', 'interior', 'lab', 'pueblopaleta', 'ruta1', 'tienda']
 
 class Mapa(object):
 	def __init__(self, filename):#, jugador):
@@ -154,9 +153,17 @@ if __name__=='__main__':
 	pygame.init()
 	pantalla = pygame.display.set_mode(tamPantalla)
 	pantalla.fill(NEGRO)
-
-	filename ="maps/interior.map"
-	ciudadVerde = Mapa(filename)
+	# Mapas iniciales:
+	centropokemon = Mapa("maps/centropokemon.map")
+	ciudadverde = Mapa("maps/ciudadverde.map")
+	gimnasio = Mapa("maps/gimnasio.map")
+	interior = Mapa("maps/interior.map")
+	laboratorio = Mapa("maps/lab.map")
+	pueblopaleta = Mapa("maps/pueblopaleta.map")
+	ruta1 = Mapa("maps/ruta1.map")
+	tienda = Mapa("maps/tienda.map")
+	# Ciudad verde es una variable que contiene el mapa actual
+	ciudadVerde = interior
 	jugador = Jugador("red.png")
 	# Posicionar al jugador:
 	jugador.ubicar(ciudadVerde)
@@ -232,30 +239,22 @@ if __name__=='__main__':
 		#-----------------------------------------------------------------------
 		# ANIMACION DEL JUGADOR AL CAMINAR
 		#-----------------------------------------------------------------------
-		#print "PRUEBA {0}".format(1%2)
 		# CAMINAR HACIA ARRIBA:
 		if (up and movup < 3) or actup:
 			jugador.sprite = jugador.matrizJugador[movup][1]
-			# jugador.pos[1] -= 0 #11 - 1*(movup%2) # mov%2 -> 11 + 10 +11 = 32 px
 			movup += 1
 			# Calcular que tan cerca esta el personaje de los limites del mapa:
 			lim = jugador.transfM(ciudadVerde)
-			print "Posicion [{0},{1}]".format(lim[0], lim[1])
 			# - not(lim[1] <= 6) -> Si esta cerca del borde superior
 			# - not([True, False, False, False] == jugador.is_a_wall(ciudadVerde, "up"))
 			#   esta condición indica que la pantalla tampoco se desplazara si hay un objeto con el cual chocar
 			if not([True, False, False, False] == jugador.is_a_wall(ciudadVerde, "up")):
-				print "{0} <= 6: {1}".format(lim[1], lim[1] <= 2)
 				if (not(lim[1] <= 2))*bool(ciudadVerde.velocidad):
 					ciudadVerde.inicioy -= ciudadVerde.velocidad
 				else:
 					jugador.pos[1] -= 11 - 1*(movup%2) # mov%2 -> 11 + 10 +11 = 32 px
-
-			#if not(lim[1] <= 6) and not([True, False, False, False] == jugador.is_a_wall(ciudadVerde, "up")):
-			#	ciudadVerde.inicioy -= ciudadVerde.velocidad
 			# El jugador solo termina el movimiento al soltar la tecla
 			if movup == 3: # Reinicia la animación
-				print "---------------------------------------------------------"
 				movup = 0
 				actup = False
 				if up == True and ([True, False, False, False] == jugador.is_a_wall(ciudadVerde, "up")):
@@ -264,23 +263,19 @@ if __name__=='__main__':
 		# CAMINAR HACIA ABAJO:
 		if (down and movdown < 3) or actdown:
 			jugador.sprite = jugador.matrizJugador[movdown][0]
-			#jugador.pos[1] += 0 #11 - 1*(movdown%2) # mov%2 -> 11 + 10 +11 = 32 px
 			movdown += 1
 			# Calcular que tan cerca esta el personaje de los limites del mapa:
 			lim = jugador.transfM(ciudadVerde)
-			print "Posicion [{0},{1}]".format(lim[0], lim[1])
 			# - not(len(ciudadVerde.map) - lim[1] <= 6) -> Si esta cerca del borde inferior
 			# - not([False, True, False, False] == jugador.is_a_wall(ciudadVerde, "down"))
 			#   esta condición indica que la pantalla tampoco se desplace si hay un objeto con el cual chocar
 			if not([False, True, False, False] == jugador.is_a_wall(ciudadVerde, "down")):
-				print "{0} - {1} = {3} <= 6: {2}".format(len(ciudadVerde.map), lim[1], lim[1] <= 60, len(ciudadVerde.map) - lim[1])
 				if ((len(ciudadVerde.map) - lim[1] <= len(ciudadVerde.map) - 1)*bool(ciudadVerde.velocidad)):
 					ciudadVerde.inicioy += ciudadVerde.velocidad
 				else:
 					jugador.pos[1] += 11 - 1*(movdown%2) # mov%2 -> 11 + 10 +11 = 32 px
 			# El jugador solo termina el movimiento al soltar la tecla
 			if movdown == 3: # Reinicia la animación
-				print "---------------------------------------------------------"
 				movdown = 0
 				actdown = False
 				if down == True and ([False, True, False, False] == jugador.is_a_wall(ciudadVerde, "down")):
@@ -289,11 +284,9 @@ if __name__=='__main__':
 		# CAMINAR HACIA LA DERECHA:
 		if (rigth and movrigth < 3) or actrigth:
 			jugador.sprite = jugador.matrizJugador[movrigth][3]
-			#jugador.pos[0] += 0 #11 - 1*(movrigth%2) # mov%2 -> 11 + 10 +11 = 32 px
 			movrigth += 1
 			# Calcular que tan cerca esta el personaje de los limites del mapa:
 			lim = jugador.transfM(ciudadVerde)
-			print "Posicion [{0},{1}]".format(lim[0], lim[1])
 			# - not(len(ciudadVerde.map[0]) - lim[0] <= 6) -> Si esta cerca del borde derecho
 			# - not([False, False, False, True] == jugador.is_a_wall(ciudadVerde, "rigth"))
 			#   esta condición indica que la pantalla tampoco se desplace si hay un objeto con el cual chocar
@@ -304,7 +297,6 @@ if __name__=='__main__':
 					jugador.pos[0] += 11 - 1*(movrigth%2) # mov%2 -> 11 + 10 +11 = 32 px
 			# El jugador solo termina el movimiento al soltar la tecla
 			if movrigth == 3: # Reinicia la animación
-				print "---------------------------------------------------------"
 				movrigth = 0
 				actrigth = False # Booleano que sirve para terminar la animacion
 				# Si el jugador tiene presionada la tecla, pero a su derecha se encuentra
@@ -315,11 +307,9 @@ if __name__=='__main__':
 		# CAMINAR HACIA LA IZQUIERDA:
 		if (left and movleft < 3) or actleft:
 			jugador.sprite = jugador.matrizJugador[movleft][2]
-			#jugador.pos[0] -= 0 # 11 - 1*(movleft%2) # mov%2 -> 11 + 10 +11 = 32 px
 			movleft += 1
 			# Calcular que tan cerca esta el personaje de los limites del mapa:
 			lim = jugador.transfM(ciudadVerde)
-			print "Posicion [{0},{1}]".format(lim[0], lim[1])
 			# - not(lim[0] <= 6) -> Si esta cerca del limite izquierdo del mapa
 			# - not([False, False, True, False] == jugador.is_a_wall(ciudadVerde, "left"))
 			#   esta condición indica que la pantalla no se desplace si hay un objeto con el cual chocar
@@ -330,7 +320,6 @@ if __name__=='__main__':
 					jugador.pos[0] -= 11 - 1*(movleft%2) # mov%2 -> 11 + 10 +11 = 32 px
 			# El jugador solo terminar el movimiento al soltar la tecla
 			if movleft == 3: # Reinicia la animación
-				print "---------------------------------------------------------"
 				movleft = 0
 				actleft = False # Booleano que sirve para terminar la animacion
 				# Si el jugador tiene presionada la tecla, pero a su izquierda se encuentra
@@ -343,76 +332,79 @@ if __name__=='__main__':
 		# CAMBIAR DE MAPA O ENTRAR A COMBATE: <orden alfabetico>
 		#-----------------------------------------------------------------------
 		posx, posy = jugador.transfM(ciudadVerde)
-		#print "Elemento act: \'{0}\'".format(ciudadVerde.map[posy][posx])
 
 		# Centro de salud pokemon:
 		if ciudadVerde.map[posy][posx] == 'S':
-			posIant = [posx, posy]
-			ciudadVerde.reemplazarElem("I", posIant)
-			filename = 'maps/'+ mapas[0] + '.map'
-			ciudadVerde = Mapa(filename)
+			posIant = [posy+1, posx]
+			ciudadverde.reemplazarElem("I", posIant)
+			ciudadVerde = centropokemon #Mapa(filename)
 			jugador.ubicar(ciudadVerde)
 
 		# Ciudad Verde:
 		elif ciudadVerde.map[posy][posx] == 'C':
-			posIant = [posx, posy]
-			ciudadVerde.reemplazarElem("I", posIant)
-			filename = 'maps/'+ mapas[1] + '.map'
-			ciudadVerde = Mapa(filename)
+			posIant = [posy+1, posx]
+			if ciudadVerde.tileset == "maps/ruta1.png":
+				ruta1.reemplazarElem("I", posIant)
+			ciudadVerde = ciudadverde # Mapa(filename)
 			jugador.ubicar(ciudadVerde)
 
 		# Gimnasio:
 		elif ciudadVerde.map[posy][posx] == 'G':
-			posIant = [posx, posy]
-			ciudadVerde.reemplazarElem("I", posIant)
-			filename = 'maps/'+ mapas[2] + '.map'
-			ciudadVerde = Mapa(filename)
+			posIant = [posy+1, posx]
+			ciudadverde.reemplazarElem("I", posIant)
+			ciudadVerde = gimnasio #Mapa(filename)
 			jugador.ubicar(ciudadVerde)
 
 		# Interior de la casa:
 		elif ciudadVerde.map[posy][posx] == 'i':
-			posIant = [posx, posy]
-			ciudadVerde.reemplazarElem("I", posIant)
-			filename = 'maps/'+ mapas[3] + '.map'
-			ciudadVerde = Mapa(filename)
+			posIant = [posy+1, posx]
+			pueblopaleta.reemplazarElem("I", posIant)
+			ciudadVerde = interior #Mapa(filename)
 			jugador.ubicar(ciudadVerde)
 
 		# Laboratorio:
 		elif ciudadVerde.map[posy][posx] == 'L':
-			posIant = [posx, posy]
-			ciudadVerde.reemplazarElem("I", posIant)
-			filename = 'maps/'+ mapas[4] + '.map'
-			ciudadVerde = Mapa(filename)
+			posIant = [posy+1, posx]
+			pueblopaleta.reemplazarElem("I", posIant)
+			ciudadVerde = laboratorio #Mapa(filename)
 			jugador.ubicar(ciudadVerde)
 
 		# Pueblo paleta:
 		elif ciudadVerde.map[posy][posx] == 'p':
-			posIant = [posx, posy]
-			ciudadVerde.reemplazarElem("I", posIant)
-			filename = 'maps/'+ mapas[5] + '.map'
-			ciudadVerde = Mapa(filename)
+			posIant = [posy, posx]
+			if ciudadVerde.tileset == "maps/interior.png":
+				posIant[0] -= 1
+				interior.reemplazarElem("I", posIant)
+			elif ciudadVerde.tileset == "maps/ruta1.png":
+				posIant = [posy, posx]
+				posIant[0] -= 1
+				ruta1.reemplazarElem("I", posIant)
+			ciudadVerde = pueblopaleta #Mapa(filename)
 			jugador.ubicar(ciudadVerde)
 
 		# Ruta 1:
 		elif ciudadVerde.map[posy][posx] == '1':
-			posIant = [posx, posy]
-			ciudadVerde.reemplazarElem("I", posIant)
-			filename = 'maps/'+ mapas[6] + '.map'
-			ciudadVerde = Mapa(filename)
+			posIant = [posy, posx]
+			if ciudadVerde.tileset == "maps/ciudadverde.png":
+				posIant[0] -= 1
+				ciudadverde.reemplazarElem("I", posIant)
+			elif ciudadVerde.tileset == "maps/pueblopaleta.png":
+				posIant[0] += 1
+				pueblopaleta.reemplazarElem("I", posIant)
+			ciudadVerde = ruta1 #Mapa(filename)
 			jugador.ubicar(ciudadVerde)
 
 		# Tienda:
 		elif ciudadVerde.map[posy][posx] == 'T':
-			posIant = [posx, posy]
-			ciudadVerde.reemplazarElem("I", posIant)
-			filename = 'maps/'+ mapas[7] + '.map'
-			ciudadVerde = Mapa(filename)
+			posIant = [posy+1, posx]
+			ciudadverde.reemplazarElem("I", posIant)
+			ciudadVerde = tienda #Mapa(filename)
 			jugador.ubicar(ciudadVerde)
 
 		# ----------------------------------------------------------------------
 		# ENTRAR EN COMBATE:
 		elif ciudadVerde.map[posy][posx] == 'P':
-			print "HAS ENTRADO A LA BATALLA POKEMON"
+			pass # print "HAS ENTRADO A LA BATALLA POKEMON"
 
 
 		reloj.tick(10)
