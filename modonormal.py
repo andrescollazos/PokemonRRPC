@@ -3,6 +3,8 @@
 import pygame
 import ConfigParser
 import math
+import random
+#import Batalla
 
 # Constantes
 BLANCO = (255, 255, 255)
@@ -20,10 +22,10 @@ class Mapa(object):
 		self.parser.read(filename)
         # Cargar mapa codifiado:
 		self.map = self.parser.get("level", "map").split("\n")
-		for section in self.parser.sections():
-			if len(section) == 1:
-				desc = dict(self.parser.items(section))
-				self.key[section] = desc
+		#for section in self.parser.sections():
+		#	if len(section) == 1:
+		#		desc = dict(self.parser.items(section))
+		#		self.key[section] = desc
 		self.width = len(self.map[0])
 		self.height = len(self.map)
 		#-----------------------------------------------------------------------
@@ -147,8 +149,8 @@ class Jugador(object):
 		return posx, posy
 
 # MAIN
-# def main(filename):
-if __name__=='__main__':
+#if __name__=='__main__':
+def main(filename, terminar, matrizPokemon, posicion = False):
 	# Parametros iniciales:
 	pygame.init()
 	pantalla = pygame.display.set_mode(tamPantalla)
@@ -163,7 +165,11 @@ if __name__=='__main__':
 	ruta1 = Mapa("maps/ruta1.map")
 	tienda = Mapa("maps/tienda.map")
 	# Ciudad verde es una variable que contiene el mapa actual
-	ciudadVerde = interior
+	ciudadVerde = Mapa(filename)
+	if posicion:
+		ciudadVerde.iniciox = posicion[0]
+		ciudadVerde.inicioy = posicion[1]
+	#ciudadVerde = interior
 	jugador = Jugador("red.png")
 	# Posicionar al jugador:
 	jugador.ubicar(ciudadVerde)
@@ -176,7 +182,7 @@ if __name__=='__main__':
 	posIant = [False, False] # Conocer la posición de inicio anterior (Cambiar de mapa)
 
 	# Ciclo del juego
-	terminar = False
+	#terminar = False
 	# reloj
 	reloj = pygame.time.Clock()
 	while not terminar:
@@ -404,8 +410,13 @@ if __name__=='__main__':
 		# ----------------------------------------------------------------------
 		# ENTRAR EN COMBATE:
 		elif ciudadVerde.map[posy][posx] == 'P':
-			pass # print "HAS ENTRADO A LA BATALLA POKEMON"
-
+			# Probabilidad de entrar en batalla -> 25%
+			# Si se detiene sobre un lugar, tiene posibilidad de entrar en batalla
+			if not bool(random.randrange(0, 4)):
+				pass
+				#terminar = True # Terminar solo esta pantalla
+				#Batalla.main((posx, posy), not(terminar))
+				# print "HAS ENTRADO A LA BATALLA POKEMON"
 
 		reloj.tick(10)
 		jugador.dibujar(pantalla)

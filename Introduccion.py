@@ -1,4 +1,6 @@
 import pygame
+import ConfigParser
+import modonormal
 
 NEGRO  = (   0,   0,   0)
 BLANCO = ( 255, 255, 255)
@@ -10,12 +12,51 @@ tamPantalla = [527, 398]
 pantalla = pygame.display.set_mode(tamPantalla)
 pygame.display.set_caption("POKEMON")
 
+# Cargar matriz que contiene los pokemones
+def pokemon_init():
+    map = [] # Matriz que va a contener la configuracion
+    parser = ConfigParser.ConfigParser()
+    parser.read("pokemon/pokemon.cfg")
+    # Leer archivo que contiene la configuracion de los pokemones
+    map = parser.get("Generacion1", "pokemones").split("\n")
+    # La siguiente matriz cuenta con los siguientes campos para cada fila:
+    #[Nombre_Pokemon, Nivel_Aparece, Familia, Imagen_Frontal, Imagen_Posterior]
+    matrizPokemon, cadena = [], ""
+    for pokemon in map:
+        fila = []
+        for i in range(len(pokemon)):
+            # No tener en cuenta los espacios
+            if not(pokemon[i] == " "):
+                cadena += pokemon[i]
+                if i + 1 == len(pokemon):
+                    fila.append(cadena)
+                    cadena = ""
+            else:
+                if len(cadena):
+                    fila.append(cadena)
+                cadena = ""
+        fila[1], fila[2] = int(fila[1]), int(fila[2])
+        matrizPokemon.append(fila)
+    # Cargar sprites para cada pokemon (Frontal y posterior)
+    for i, pokemon in enumerate (matrizPokemon):
+        filename = "img/pokemones/"+str(i+1)+".png"
+        image = pygame.image.load(filename)
+        imagen_ancho, imagen_alto = image.get_size()
+        alto, ancho = 65, 65
+        # Recortar imagen, separar imagen frontal e imagen posterior
+        for x in range(imagen_ancho/ancho):
+            cuadro = (x*ancho, 0, ancho, alto)
+            pokemon.append(image.subsurface(cuadro))
+    # Ordenar la matriz pokemon de menor a mayor nivel (al aparecer)
+    matrizPokemon = sorted(matrizPokemon, key=lambda pokemon: pokemon[1])
+    return matrizPokemon
 
+# Funcion para mostrar por pantalla una imagen:
 def imagenes(tamano,posicion,ruta):
-  imagen = pygame.image.load(ruta)
-  imagen = pygame.transform.scale(imagen,tamano)
-  pantalla.blit(imagen,posicion)
-  pygame.display.flip()
+    imagen = pygame.image.load(ruta)
+    imagen = pygame.transform.scale(imagen,tamano)
+    pantalla.blit(imagen,posicion)
+    pygame.display.flip()
 
 
     #CICLO PRESENTACION
@@ -124,9 +165,12 @@ def Controles(terminar):
         return False # Indica que el juego va a comenzar
 
 if __name__=='__main__':
+    # Paramentros iniciales
+    pokemones = pokemon_init() # Cargar pokemones
     pygame.init()
     dim = tamPantalla
 
     presentacion = Presentacion()
     introduccion = Introduccion(presentacion)
     controles = Controles(introduccion)
+    modoN = modonormal.main("maps/interior.map", introduccion, pokemones)
