@@ -48,7 +48,7 @@ def pokemon_init():
             cuadro = (x*ancho, 0, ancho, alto)
             pokemon.append(image.subsurface(cuadro))
     # Ordenar la matriz pokemon de menor a mayor nivel (al aparecer)
-    matrizPokemon = sorted(matrizPokemon, key=lambda pokemon: pokemon[1])
+    #matrizPokemon = sorted(matrizPokemon, key=lambda pokemon: pokemon[1])
     return matrizPokemon
 
 # Funcion para mostrar por pantalla una imagen:
