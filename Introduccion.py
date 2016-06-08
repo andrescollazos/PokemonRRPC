@@ -20,7 +20,8 @@ def pokemon_init():
     # Leer archivo que contiene la configuracion de los pokemones
     map = parser.get("Generacion1", "pokemones").split("\n")
     # La siguiente matriz cuenta con los siguientes campos para cada fila:
-    #[Nombre_Pokemon, Nivel_Aparece, Familia, Imagen_Frontal, Imagen_Posterior]
+    #[Nombre_Pokemon, Nivel_Aparece, Familia, Experiencia_Ganada, Vida, LimVida, Imagen_Frontal, Imagen_Posterior]
+    # La vida se calcula con base en: V(Nivel_Aparece) = 5*Nivel_Aparece
     matrizPokemon, cadena = [], ""
     for pokemon in map:
         fila = []
@@ -35,8 +36,13 @@ def pokemon_init():
                 if len(cadena):
                     fila.append(cadena)
                 cadena = ""
-        fila[1], fila[2] = int(fila[1]), int(fila[2])
+        fila[1], fila[2], fila[3], fila[4] = int(fila[1]), int(fila[2]), int(fila[3]), int(fila[4])
+        fila.append(int(fila[4])) # Agregar limite de vida
         matrizPokemon.append(fila)
+    # Calcular experiencia Base: E = 4*(n^3)/5
+    for pokemon in matrizPokemon:
+        pokemon[3] = (4*(pokemon[1]**3))/5
+
     # Cargar sprites para cada pokemon (Frontal y posterior)
     for i, pokemon in enumerate (matrizPokemon):
         filename = "img/pokemones/"+str(i+1)+".png"
@@ -49,6 +55,8 @@ def pokemon_init():
             pokemon.append(image.subsurface(cuadro))
     # Ordenar la matriz pokemon de menor a mayor nivel (al aparecer)
     #matrizPokemon = sorted(matrizPokemon, key=lambda pokemon: pokemon[1])
+    for i in matrizPokemon:
+        print i
     return matrizPokemon
 
 # Funcion para mostrar por pantalla una imagen:
