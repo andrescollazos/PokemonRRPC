@@ -102,6 +102,7 @@ class Jugador(object):
 		self.pos = [False, False]
 		self.sprite = self.matrizJugador[1][0]
 		self.pokemones = []
+		self.pokemon_default = []
 		self.seleccionar_pokemon = True # Seleccionar primer pokemon
 		self.aviso_sin_pokemon = False # Por si el jugador intenta salir del pueblo sin pokemon
 
@@ -248,6 +249,7 @@ def main(filename, terminar, matrizPokemon, posicion = False):
 						if ciudadVerde.map[posy][posx] == 's':
 							# Seleccionar a squirtle:
 							jugador.pokemones.append(matrizPokemon[6])
+							jugador.pokemon_default = jugador.pokemones[0]
 							jugador.seleccionar_pokemon = False
 							jugador.aviso_sin_pokemon = False
 							aviso = pygame.image.load("img/avisos/squirtle_seleccionado.jpg")
@@ -258,6 +260,7 @@ def main(filename, terminar, matrizPokemon, posicion = False):
 						elif ciudadVerde.map[posy][posx] == 'r':
 							# Seleccionar a charmander
 							jugador.pokemones.append(matrizPokemon[3])
+							jugador.pokemon_default = jugador.pokemones[0]
 							jugador.seleccionar_pokemon = False
 							jugador.aviso_sin_pokemon = False
 							aviso = pygame.image.load("img/avisos/charmander_seleccionado.jpg")
@@ -268,6 +271,7 @@ def main(filename, terminar, matrizPokemon, posicion = False):
 						elif ciudadVerde.map[posy][posx] == 'b':
 							# Seleccionar a bulbasaur:
 							jugador.pokemones.append(matrizPokemon[0])
+							jugador.pokemon_default = jugador.pokemones[0]
 							jugador.seleccionar_pokemon = False
 							jugador.aviso_sin_pokemon = False
 							aviso = pygame.image.load("img/avisos/bulbasaur_seleccionado.jpg")
