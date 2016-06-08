@@ -101,6 +101,9 @@ class Jugador(object):
 				linea.append(self.image.subsurface(cuadro))
 		self.pos = [False, False]
 		self.sprite = self.matrizJugador[1][0]
+		self.pokemones = []
+		self.seleccionar_pokemon = True # Seleccionar primer pokemon
+		self.aviso_sin_pokemon = False # Por si el jugador intenta salir del pueblo sin pokemon
 
 	# UBICAR JUGADOR EN LA PANTALLA:
 	def ubicar(self, city):
@@ -148,6 +151,14 @@ class Jugador(object):
 		posy = ((((self.pos[1] + (tamJugador-32))*city.scale)/32) + city.inicioy)/city.scale
 		return posx, posy
 
+class Enemigo(object):
+	def __init__(self, imagen):
+		self.image = pygame.image.load(imagen)
+		self.rect = self.image.get_rect()
+		self.image = pygame.transform.scale(self.image, (tamJugador, tamJugador))
+		self.pokemones = []
+		self.dialogo = False
+
 # MAIN
 #if __name__=='__main__':
 def main(filename, terminar, matrizPokemon, posicion = False):
@@ -155,6 +166,7 @@ def main(filename, terminar, matrizPokemon, posicion = False):
 	pygame.init()
 	pantalla = pygame.display.set_mode(tamPantalla)
 	pantalla.fill(NEGRO)
+	accion = False # Boton de false
 	# Mapas iniciales:
 	centropokemon = Mapa("maps/centropokemon.map")
 	ciudadverde = Mapa("maps/ciudadverde.map")
@@ -169,10 +181,23 @@ def main(filename, terminar, matrizPokemon, posicion = False):
 	if posicion:
 		ciudadVerde.iniciox = posicion[0]
 		ciudadVerde.inicioy = posicion[1]
-	#ciudadVerde = interior
+	# JUGADOR:
 	jugador = Jugador("red.png")
-	# Posicionar al jugador:
-	jugador.ubicar(ciudadVerde)
+	jugador.ubicar(ciudadVerde) # Posicionar al jugador:
+
+	# ENEMIGOS
+	# Matriz de pokemones de Blue
+	blue = Enemigo("img/enemigos/Blue.png")
+	blue.pokemones = [matrizPokemon[15]] # Pidgey
+	blue.pokemones[0][1] = 5 # El pokemon de Blue es nivel 5
+	# Matriz de pokemones de Brock
+	Brock = Enemigo("img/enemigos/brock.png")
+	Brock.pokemones = [matrizPokemon[73], matrizPokemon[94]]
+	Brock.pokemones[0][1] = 14 # Geodude nivel 14
+	Brock.pokemones[1][1] = 20 # Onix nivel 20
+
+	# PROFESOR OAK (NPC's)
+	oak_conversacion = True # Booleano que informa si se ha hablado con OAk
 
 	# x, y -> Cantidad de ciclos para pintar el mapa a realizar:
 	x, y = (tamPantalla[0]*ciudadVerde.scale)/tamCuadro, (tamPantalla[1]*ciudadVerde.scale)/tamCuadro
@@ -215,6 +240,42 @@ def main(filename, terminar, matrizPokemon, posicion = False):
 					if not([False, False, True, False] == jugador.is_a_wall(ciudadVerde, "left")):
 						left = True
 						actleft = True
+				# Empezar una acción:
+				if event.key == pygame.K_a:
+					posx, posy = jugador.transfM(ciudadVerde)
+					# SELECCIONAR EL POKEMON INCIAL
+					if not(oak_conversacion) and jugador.seleccionar_pokemon:
+						if ciudadVerde.map[posy][posx] == 's':
+							# Seleccionar a squirtle:
+							jugador.pokemones.append(matrizPokemon[6])
+							jugador.seleccionar_pokemon = False
+							jugador.aviso_sin_pokemon = False
+							aviso = pygame.image.load("img/avisos/squirtle_seleccionado.jpg")
+							pantalla.blit(aviso, (0, 0))
+							pygame.display.flip()
+							reloj.tick(0.3)
+							#print "SQUIRTLE SELECCIONADO: \n POKEMONES: {0}".format(jugador.pokemones)
+						elif ciudadVerde.map[posy][posx] == 'r':
+							# Seleccionar a charmander
+							jugador.pokemones.append(matrizPokemon[3])
+							jugador.seleccionar_pokemon = False
+							jugador.aviso_sin_pokemon = False
+							aviso = pygame.image.load("img/avisos/charmander_seleccionado.jpg")
+							pantalla.blit(aviso, (0, 0))
+							pygame.display.flip()
+							reloj.tick(0.3)
+							#print "CHARMANDER SELECCIONADO: \n POKEMONES: {0}".format(jugador.pokemones)
+						elif ciudadVerde.map[posy][posx] == 'b':
+							# Seleccionar a bulbasaur:
+							jugador.pokemones.append(matrizPokemon[0])
+							jugador.seleccionar_pokemon = False
+							jugador.aviso_sin_pokemon = False
+							aviso = pygame.image.load("img/avisos/bulbasaur_seleccionado.jpg")
+							pantalla.blit(aviso, (0, 0))
+							pygame.display.flip()
+							reloj.tick(0.3)
+							#print "BULBASAUR SELECCIONADO: \n POKEMONES: {0}".format(jugador.pokemones)
+
 			# CONTROLES CUANDO EL JUGADOR SUELTA UNA TECLA
 			if event.type == pygame.KEYUP:
 				if event.key == pygame.K_UP:
@@ -390,15 +451,20 @@ def main(filename, terminar, matrizPokemon, posicion = False):
 
 		# Ruta 1:
 		elif ciudadVerde.map[posy][posx] == '1':
-			posIant = [posy, posx]
-			if ciudadVerde.tileset == "maps/ciudadverde.png":
-				posIant[0] -= 1
-				ciudadverde.reemplazarElem("I", posIant)
-			elif ciudadVerde.tileset == "maps/pueblopaleta.png":
-				posIant[0] += 1
-				pueblopaleta.reemplazarElem("I", posIant)
-			ciudadVerde = ruta1 #Mapa(filename)
-			jugador.ubicar(ciudadVerde)
+			if not(len(jugador.pokemones) == 0):
+				posIant = [posy, posx]
+				if ciudadVerde.tileset == "maps/ciudadverde.png":
+					posIant[0] -= 1
+					ciudadverde.reemplazarElem("I", posIant)
+				elif ciudadVerde.tileset == "maps/pueblopaleta.png":
+					posIant[0] += 1
+					pueblopaleta.reemplazarElem("I", posIant)
+				ciudadVerde = ruta1 #Mapa(filename)
+				jugador.ubicar(ciudadVerde)
+			else:
+				# EN EL CASO DE NO TENER NINGUN POKEMON, MOSTRAR AVISO
+				jugador.aviso_sin_pokemon = True
+
 
 		# Tienda:
 		elif ciudadVerde.map[posy][posx] == 'T':
@@ -420,4 +486,49 @@ def main(filename, terminar, matrizPokemon, posicion = False):
 
 		reloj.tick(10)
 		jugador.dibujar(pantalla)
+
+		#----------------------------------------------------------------------
+		# AVISOS
+
+		# En caso de que el jugador intente salir del pueblo paleta sin un pokemon:
+		if jugador.aviso_sin_pokemon:
+			aviso = pygame.image.load("img/avisos/sin_pokemon.png")
+			pantalla.blit(aviso, (0, 0))
+			jugador.aviso_sin_pokemon = False
+
+		# Avisos dentro del laboratorio
+		if ciudadVerde.tileset == "maps/laboratorio.png":
+			posx, posy = jugador.transfM(ciudadVerde)
+			# Conversacion con el profesor OAK (solo se tiene una vez)
+			if ciudadVerde.map[posy][posx] == 'o' and oak_conversacion:
+				aviso = pygame.image.load("img/avisos/entregar_pokemon.png")
+				aviso2 = pygame.image.load("img/avisos/entregar_pokemon2.png")
+				pantalla.blit(aviso, (0, 0))
+				pygame.display.flip()
+				reloj.tick(0.1)
+				pantalla.blit(aviso2, (0, 0))
+				pygame.display.flip()
+				reloj.tick(0.1)
+				oak_conversacion = False
+			# Seleccionar pokemon inicial:
+			if not(oak_conversacion):
+				if ciudadVerde.map[posy][posx] == 's' and jugador.seleccionar_pokemon:
+					aviso = pygame.image.load("img/avisos/seleccionar_squirtle.png")
+					pantalla.blit(aviso, (354, 16))
+					pygame.display.flip()
+				elif ciudadVerde.map[posy][posx] == 'r' and jugador.seleccionar_pokemon:
+					aviso = pygame.image.load("img/avisos/seleccionar_charmander.png")
+					pantalla.blit(aviso, (354, 16))
+					pygame.display.flip()
+				elif ciudadVerde.map[posy][posx] == 'b' and jugador.seleccionar_pokemon:
+					aviso = pygame.image.load("img/avisos/seleccionar_bulbasaur.png")
+					pantalla.blit(aviso, (354, 16))
+					pygame.display.flip()
+			if blue.dialogo:
+				aviso = pygame.image.load("img/avisos/duelo_Blue.png")
+				pantalla.blit(aviso, (0, 0))
+				reloj.tick(0.2)
+
+		# Teclas de accion:
+
 		pygame.display.flip()
