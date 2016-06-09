@@ -20,7 +20,7 @@ def pokemon_init():
     # Leer archivo que contiene la configuracion de los pokemones
     map = parser.get("Generacion1", "pokemones").split("\n")
     # La siguiente matriz cuenta con los siguientes campos para cada fila:
-    #[Nombre_Pokemon, Nivel_Aparece, Familia, Experiencia_Ganada, Vida, LimVida, Imagen_Frontal, Imagen_Posterior]
+    #[Nombre_Pokemon, Nivel_Aparece, Familia, Experiencia_Ganada, Ratio_Captura, Vida, LimVida, Imagen_Frontal, Imagen_Posterior]
     # La vida se calcula con base en: V(Nivel_Aparece) = 5*Nivel_Aparece
     matrizPokemon, cadena = [], ""
     for pokemon in map:
@@ -36,8 +36,8 @@ def pokemon_init():
                 if len(cadena):
                     fila.append(cadena)
                 cadena = ""
-        fila[1], fila[2], fila[3], fila[4] = int(fila[1]), int(fila[2]), int(fila[3]), int(fila[4])
-        fila.append(int(fila[4])) # Agregar limite de vida
+        fila[1], fila[2], fila[3], fila[4], fila[5] = int(fila[1]), int(fila[2]), int(fila[3]), int(fila[4]), int(fila[5])
+        fila.append(int(fila[5])) # Agregar limite de vida
         matrizPokemon.append(fila)
     # Calcular experiencia Base: E = 4*(n^3)/5
     for pokemon in matrizPokemon:
@@ -56,7 +56,8 @@ def pokemon_init():
     # Ordenar la matriz pokemon de menor a mayor nivel (al aparecer)
     #matrizPokemon = sorted(matrizPokemon, key=lambda pokemon: pokemon[1])
     for i in matrizPokemon:
-        print i
+        print "vida: {0} ratio {1}".format(i[5], i[4])
+    #    print "Cargando Pokemon: {0}".format(i[0])
     return matrizPokemon
 
 # Funcion para mostrar por pantalla una imagen:
@@ -178,7 +179,7 @@ if __name__=='__main__':
     pygame.init()
     dim = tamPantalla
 
-    presentacion = Presentacion()
-    introduccion = Introduccion(presentacion)
-    controles = Controles(introduccion)
-    modoN = modonormal.main("maps/interior.map", introduccion, pokemones)
+    #presentacion = Presentacion()
+    #introduccion = Introduccion(presentacion)
+    #controles = Controles(introduccion)
+    modoN = modonormal.main("maps/interior.map", False, pokemones, False)

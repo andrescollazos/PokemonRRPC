@@ -1,6 +1,8 @@
+# coding=utf-8
 import pygame
 import ConfigParser
 import modonormal
+import random
 
 # Constantes
 BLANCO = (255, 255, 255)
@@ -24,12 +26,12 @@ class Estado(object):
         # Datos del pokemon
         self.pokemon = pokemon
         # Nombre del pokemon:
-        self.nombre = list('Bulbasaur'.upper()) #list(self.pokemon[0].upper())
+        self.nombre = list(self.pokemon[0].upper())
         self.posi_nombre = posN
         for i in range(len(self.nombre)): # Convertir cadena en vector de imagenes:
             self.nombre[i] = [convertLI(self.nombre[i]), (self.posi_nombre[0]+i*10, self.posi_nombre[1])]
         # Nivel del pokemon:
-        self.nivel = list(str(10)) # list(str(self.pokemon[1]))
+        self.nivel = list(str(self.pokemon[1]))
         self.posi_nivel = posL
         for i in range(len(self.nivel)): # Convertir cadena en vector de imagenes:
             self.nivel[i] = [convertLI(self.nivel[i]), (self.posi_nivel[0]+i*6, self.posi_nivel[1])]
@@ -53,8 +55,8 @@ class Estado(object):
             pantalla.blit(img, numero[1])
 
     def calc_ps(self):
-        vida = 10 #self.pokemon[4]
-        limvida = 20 #self.pokemon[5]
+        vida = self.pokemon[5]
+        limvida = self.pokemon[6]
         porcion = limvida/10.0
         for i in range(len(self.status)):
             if vida > porcion*(i):
@@ -83,24 +85,107 @@ class Cursor(object):
     def mostrar(self, pantalla):
         pantalla.blit(self.image, self.posicion)
 
+class Pokemon(object):
+    def __init__(self, pokemones, sentido=True):
+        self.pokemones = pokemones # Matriz de Pokemones
+        self.pokemon = pokemones[0] # Pokemon inicial
+        self.contPok = 0 # Contador Pokemon
+        image_ancho, imagen_alto = self.pokemon[7].get_size()
+        # Imagen frontal
+        self.imageF = pygame.transform.scale(self.pokemon[7], (image_ancho*2, imagen_alto*2))
+        self.posF = (319, 36)
+        # Imagen Trasera
+        self.imageP =  pygame.transform.scale(self.pokemon[8], (image_ancho*2, imagen_alto*2))
+        self.posP = (76, 133)
+        self.sentido = sentido
+        if self.sentido:
+            self.image = self.imageP
+            self.pos = self.posP
+        else:
+            self.image = self.imageF
+            self.pos = self.posF
+        self.terminar_duelo = False
+
+    def mostrar(self, pantalla):
+        pantalla.blit(self.image, self.pos)
+
+    def cambiar_Pokemon(self):
+        image_ancho, imagen_alto = self.pokemon[7].get_size()
+        # Imagen frontal
+        self.imageF = pygame.transform.scale(self.pokemon[7], (image_ancho*2, imagen_alto*2))
+        # Imagen Trasera
+        self.imageP =  pygame.transform.scale(self.pokemon[8], (image_ancho*2, imagen_alto*2))
+        if self.sentido:
+            self.image = self.imageP
+        else:
+            self.image = self.imageF
+
+    def subir_nivel(self):
+        # Calcular nivel en función de la experiencia:
+        n = ((self.pokemon[3]*5.0)/4)**(1.0/3)
+        print int(n)
+
+    # D = 0.01*E*V*(((0.2*N + 1)*P)/25 + 2)
+    # E -> Efectividad: {1, 2, 4}
+    # V -> Variacion: Valores discretos: 85-100
+    # N -> Nivel del pokemon atacante
+    # P -> Poder del ataque (Placaje) (35)
+    def atacar(self, enemigo, tipo_combate = 0):#, pantalla):
+        e = [0.5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 4]# Dominio de efectividad
+        # Variables para el calculo del daño
+        E = e[random.randrange(0, 10)]      # Efectividad del ataque
+        V = random.randrange(85, 101)       # Variacion del daño
+        P = 50                              # Potencia del Placaje
+        N = self.pokemon[1]                 # Nivel del pokemon atacante
+        # DAÑO CAUSADO AL OPONENTE:
+        D = 0.01*E*V*(2 + ((0.2*N + 1)*P)/25)
+        enemigo.pokemon[5] -= D
+
+        # Calcular Experiencia ganada (Cuando el pokemon enemigo es derrotado)
+        # EXP = (E*L*C)/7
+        # E -> Experiencia Base del rival
+        # L -> Nivel del oponente
+        # C -> Tipo de combate: {1: Pokemon salvaje, 1.5: Entrenador}
+        if enemigo.pokemon[5] <= 0:
+            if not(tipo_combate):
+                C = 1 # Pokemon Salvaje
+            else:
+                C = 1.5 # Entrenador Pokemon
+            exp = (enemigo.pokemon[3]*enemigo.pokemon[1]*C)/7
+            self.pokemon[3] += exp # Subir experiencia
+            self.subir_nivel() # Verificar si aumenta de nivel
+
+            # Si el contador pokemon es igual a la longitud de los pokemones
+            # enemigos, quiere decir que fue completamente derrotado
+            if enemigo.contPok == len(enemigo.pokemones) - 1:
+                self.terminar_duelo = True
+            # Enemigo cambia de pokemon
+            if len(enemigo.pokemones) > 1 and not(self.terminar_duelo):
+                enemigo.contPok += 1
+                enemigo.pokemon = enemigo.pokemones[enemigo.contPok]
+                enemigo.cambiar_Pokemon()
+
 # Funcion principal:
 # Jugador -> recibe los parametros del jugador: posicion, pokemones.
-# matrizPokemon -> Todos los pokemones con sus respectivos sprites
+# Enemigo -> recibe la lista de los pokemones enemigos
 # tipo_combate -> 0: Pokemon salvaje, 1: Entrenador Pokemon
 # terminar -> Indica si se termino o no el juego
-def main(jugador, matrizPokemon, tipo_combate, terminar):
+def main(jugador, enemigo, tipo_combate, terminar, matrizPokemon):
     # Parametros iniciales:
     pygame.init()
     pantalla = pygame.display.set_mode(tamPantalla)
     pantalla.fill(NEGRO)
     reloj = pygame.time.Clock()
+    turno_enemigo = False
 
     # Marco del duelo:
     marco = pygame.image.load("img/Batalla/marco_batalla.png")
     # Estado del pokemon del jugador:
-    estado = Estado(True, (315, 187), (350, 202), (500, 202), (412, 221))
+    pokemon_jug = Pokemon(jugador.pokemones) # Pokemon Actual (Default)
+    estado = Estado(pokemon_jug.pokemon, (315, 187), (350, 202), (500, 202), (412, 221))
     # Estado del pokemo enemigo:
-    estadoEnemigo = Estado(True, (5, 6), (42, 21), (189, 21), (102, 40))
+    pokemon_ene = Pokemon(enemigo, False) # Pokemon Actual del enemigo
+    estadoEnemigo = Estado(pokemon_ene.pokemon, (5, 6), (42, 21), (189, 21), (102, 40))
     # Cursor del menu:
     cursor = Cursor()
 
@@ -178,11 +263,29 @@ def main(jugador, matrizPokemon, tipo_combate, terminar):
                         # ENTRAR EN MENU POKEMON  ENTRAR EN MENU POKEMON
                         pass
                     elif cursor.posicion == cursor.posicion_validas["Huir"]:
+                        terminar = True
+                        # Mostrar aviso de huida:
+                        aviso = pygame.image.load("img/avisos/huir.png")
+                        pantalla.fill(NEGRO)
+                        pantalla.blit(aviso, (0,0))
+                        pygame.display.flip()
+                        reloj.tick(0.8)
+                        modonormal.main(jugador.city.filename, not(terminar), matrizPokemon, jugador, (jugador.city.iniciox, jugador.city.inicioy))
+                        break
                         # HUIR HUIR HUIR HUIR HUIR HUIR HUIR HUIR HUIR HUIR
-                        pass
+                        # pass
                     elif cursor.posicion == cursor.posicion_validas["Placaje"]:
-                        # ATACAR ATACAR  ATACAR  ATACAR  ATACAR  ATACAR  ATACAR"
-                        pass
+                        pokemon_jug.atacar(pokemon_ene) # Atacar Pokemon Enemigo
+                        estadoEnemigo.pokemon = pokemon_ene.pokemon # En caso de cambiar de pokemon
+                        estadoEnemigo.calc_ps() # Calcular Ps del enemigo
+                        # Saber si el pokemon del jugador gano el duelo:
+                        if pokemon_jug.terminar_duelo:
+                            print "GANAS EL DUELO!"
+                            #print "TU VIDA: {0} ENEMIGO: {1}".format(pokemon_jug.pokemon[5], pokemon_ene.pokemon[5])
+                            terminar = True
+                            modonormal.main(jugador.city.filename, not(terminar), matrizPokemon, jugador, (jugador.city.iniciox, jugador.city.inicioy))
+                            break
+                        turno_enemigo = True
                 if event.key == pygame.K_b:
                     if cursor.posicion == cursor.posicion_validas["Placaje"]:
                         cursor.posicion = cursor.posicion_validas["Lucha"]
@@ -191,7 +294,21 @@ def main(jugador, matrizPokemon, tipo_combate, terminar):
         cursor.mostrar(pantalla)
         estado.mostrar(pantalla)
         estadoEnemigo.mostrar(pantalla)
+        pokemon_jug.mostrar(pantalla)
+        pokemon_ene.mostrar(pantalla)
         pygame.display.flip()
 
+        # TURNO DEL POKEMON ENEMIGO:
+        if turno_enemigo:
+            reloj.tick(0.45) # Esperar
+            reloj.tick(1)
+            pokemon_ene.atacar(pokemon_jug)
+            estado.calc_ps()
+            turno_enemigo = False
+            if pokemon_ene.terminar_duelo:
+                print "PERDISTE LOCA"
+                print "TU VIDA: {0} ENEMIGO: {1}".format(pokemon_jug.pokemon[5], pokemon_ene.pokemon[5])
+                terminar = True
+
 #n = EstadoPokemon(True)
-main(True, True, True, False)
+#main(True, True, True, False)

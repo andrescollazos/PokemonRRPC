@@ -4,7 +4,7 @@ import pygame
 import ConfigParser
 import math
 import random
-#import Batalla
+import Batalla
 
 # Constantes
 BLANCO = (255, 255, 255)
@@ -13,6 +13,9 @@ tamCuadro = 32 # Tamaño de cada cuadro
 tamPantalla = [527, 398]
 tamJugador = 48
 
+#-------------------------------------------------------------------------------
+# CLASES
+
 class Mapa(object):
 	def __init__(self, filename):#, jugador):
 		# Elementos propios del mapa:
@@ -20,6 +23,7 @@ class Mapa(object):
 		self.key = {}
 		self.parser = ConfigParser.ConfigParser()
 		self.parser.read(filename)
+		self.filename = filename # Poder retornar de otros Modulos
         # Cargar mapa codifiado:
 		self.map = self.parser.get("level", "map").split("\n")
 		#for section in self.parser.sections():
@@ -52,6 +56,8 @@ class Mapa(object):
 		self.inicioy = int(self.parser.get("level", "inicioy"))
 		# Velocidad de la pantalla:
 		self.velocidad = int(self.parser.get("level", "velocidad"))
+		# Pokemones que aparecen en dicho mapa:
+		self.lista_pokemones = []
 
 	# Funcion que permite buscar una letra en la matriz del mapa:
 	def buscarL(self, letra):
@@ -102,9 +108,10 @@ class Jugador(object):
 		self.pos = [False, False]
 		self.sprite = self.matrizJugador[1][0]
 		self.pokemones = []
-		self.pokemon_default = []
 		self.seleccionar_pokemon = True # Seleccionar primer pokemon
 		self.aviso_sin_pokemon = False # Por si el jugador intenta salir del pueblo sin pokemon
+		self.city = False # Para poder retornar del modo Batalla
+		self.ultima_batalla = []# Variable que guarda la posición de la ultima batalla
 
 	# UBICAR JUGADOR EN LA PANTALLA:
 	def ubicar(self, city):
@@ -160,31 +167,58 @@ class Enemigo(object):
 		self.pokemones = []
 		self.dialogo = False
 
+#-------------------------------------------------------------------------------
+# FUNCIONES
+# Esta funcion retorna una lista con pokemons en un rango de nivel
+# rango -> [limInf, limSup] : limInf -> Nivel inferior del rango
+#							: limSup -> Nivel Superior del rango
+# matrizPokemon -> Matriz que contiene todos los 150 pokemones
+def pokemonNivel(rango, matrizPokemon):
+	lista_pokemon = []
+	for pokemon in matrizPokemon:
+		if pokemon[1] >= rango[0] and pokemon[1] <= rango[1]:
+			lista_pokemon.append(pokemon)
+	return lista_pokemon
+
 # MAIN
 #if __name__=='__main__':
-def main(filename, terminar, matrizPokemon, posicion = False):
+def main(filename, terminar, matrizPokemon, Jugador_INIT, posicion = False):
 	# Parametros iniciales:
 	pygame.init()
 	pantalla = pygame.display.set_mode(tamPantalla)
 	pantalla.fill(NEGRO)
 	accion = False # Boton de false
 	# Mapas iniciales:
+	# Centro Pokemon
 	centropokemon = Mapa("maps/centropokemon.map")
+	# Ciudad Verde
 	ciudadverde = Mapa("maps/ciudadverde.map")
+	# Gimnasio:
 	gimnasio = Mapa("maps/gimnasio.map")
+	gimnasio.lista_pokemones = pokemonNivel([10, 20], matrizPokemon) # Pokemones de nivel 10-20
+	# Interior de la casa:
 	interior = Mapa("maps/interior.map")
+	# Laboratorio Pokemon:
 	laboratorio = Mapa("maps/lab.map")
+	# Pueblo Paleta
 	pueblopaleta = Mapa("maps/pueblopaleta.map")
+	# Ruta 1: Camino entre pueblo paleta y Ciudad Verde
 	ruta1 = Mapa("maps/ruta1.map")
+	ruta1.lista_pokemones = pokemonNivel([3, 8], matrizPokemon) # Pokemones de nivel 3-8
+	# Tienda del juego
 	tienda = Mapa("maps/tienda.map")
+
 	# Ciudad verde es una variable que contiene el mapa actual
 	ciudadVerde = Mapa(filename)
 	if posicion:
 		ciudadVerde.iniciox = posicion[0]
 		ciudadVerde.inicioy = posicion[1]
 	# JUGADOR:
-	jugador = Jugador("red.png")
-	jugador.ubicar(ciudadVerde) # Posicionar al jugador:
+	if not(Jugador_INIT):
+		jugador = Jugador("red.png")
+		jugador.ubicar(ciudadVerde) # Posicionar al jugador:
+	else:
+		jugador = Jugador_INIT
 
 	# ENEMIGOS
 	# Matriz de pokemones de Blue
@@ -249,35 +283,35 @@ def main(filename, terminar, matrizPokemon, posicion = False):
 						if ciudadVerde.map[posy][posx] == 's':
 							# Seleccionar a squirtle:
 							jugador.pokemones.append(matrizPokemon[6])
-							jugador.pokemon_default = jugador.pokemones[0]
+							#jugador.pokemon_default = jugador.pokemones[0]
 							jugador.seleccionar_pokemon = False
 							jugador.aviso_sin_pokemon = False
 							aviso = pygame.image.load("img/avisos/squirtle_seleccionado.jpg")
 							pantalla.blit(aviso, (0, 0))
 							pygame.display.flip()
-							reloj.tick(0.3)
+							#reloj.tick(0.3)
 							#print "SQUIRTLE SELECCIONADO: \n POKEMONES: {0}".format(jugador.pokemones)
 						elif ciudadVerde.map[posy][posx] == 'r':
 							# Seleccionar a charmander
 							jugador.pokemones.append(matrizPokemon[3])
-							jugador.pokemon_default = jugador.pokemones[0]
+							#jugador.pokemon_default = jugador.pokemones[0]
 							jugador.seleccionar_pokemon = False
 							jugador.aviso_sin_pokemon = False
 							aviso = pygame.image.load("img/avisos/charmander_seleccionado.jpg")
 							pantalla.blit(aviso, (0, 0))
 							pygame.display.flip()
-							reloj.tick(0.3)
+							#reloj.tick(0.3)
 							#print "CHARMANDER SELECCIONADO: \n POKEMONES: {0}".format(jugador.pokemones)
 						elif ciudadVerde.map[posy][posx] == 'b':
 							# Seleccionar a bulbasaur:
 							jugador.pokemones.append(matrizPokemon[0])
-							jugador.pokemon_default = jugador.pokemones[0]
+							#jugador.pokemon_default = jugador.pokemones[0]
 							jugador.seleccionar_pokemon = False
 							jugador.aviso_sin_pokemon = False
 							aviso = pygame.image.load("img/avisos/bulbasaur_seleccionado.jpg")
 							pantalla.blit(aviso, (0, 0))
 							pygame.display.flip()
-							reloj.tick(0.3)
+							#reloj.tick(0.3)
 							#print "BULBASAUR SELECCIONADO: \n POKEMONES: {0}".format(jugador.pokemones)
 
 			# CONTROLES CUANDO EL JUGADOR SUELTA UNA TECLA
@@ -482,11 +516,21 @@ def main(filename, terminar, matrizPokemon, posicion = False):
 		elif ciudadVerde.map[posy][posx] == 'P':
 			# Probabilidad de entrar en batalla -> 25%
 			# Si se detiene sobre un lugar, tiene posibilidad de entrar en batalla
-			if not bool(random.randrange(0, 4)):
-				pass
-				#terminar = True # Terminar solo esta pantalla
-				#Batalla.main((posx, posy), not(terminar))
-				# print "HAS ENTRADO A LA BATALLA POKEMON"
+			if not bool(random.randrange(0, 10)):
+				# Cuando el jugador termine la batalla, no podrá entrar nuevamente en batalla
+				# en esa posición.
+				if not((posy, posx) == jugador.ultima_batalla):
+					jugador.ultima_batalla = (posy ,posx)
+					terminar = True # Terminar solo esta pantalla
+					if ciudadVerde.tileset == "maps/ruta1.png":
+						rand = random.randrange(0, len(ruta1.lista_pokemones))
+						pokemon_enemigo = ruta1.lista_pokemones[rand]
+						jugador.city = ruta1 # Retornar a este mapa una vez terminado el duelo
+						jugador.city.iniciox = ciudadVerde.iniciox
+						jugador.city.inicioy = ciudadVerde.inicioy
+						print "POKEMON ENEMIGO: {0}".format(pokemon_enemigo[0])
+						Batalla.main(jugador, [pokemon_enemigo], 0, not(terminar), matrizPokemon)
+						#print "HAS ENTRADO A LA BATALLA POKEMON"
 
 		reloj.tick(10)
 		jugador.dibujar(pantalla)
@@ -509,10 +553,10 @@ def main(filename, terminar, matrizPokemon, posicion = False):
 				aviso2 = pygame.image.load("img/avisos/entregar_pokemon2.png")
 				pantalla.blit(aviso, (0, 0))
 				pygame.display.flip()
-				reloj.tick(0.1)
+				#reloj.tick(0.1)
 				pantalla.blit(aviso2, (0, 0))
 				pygame.display.flip()
-				reloj.tick(0.1)
+				#reloj.tick(0.1)
 				oak_conversacion = False
 			# Seleccionar pokemon inicial:
 			if not(oak_conversacion):
