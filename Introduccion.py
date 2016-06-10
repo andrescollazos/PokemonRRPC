@@ -177,8 +177,12 @@ if __name__=='__main__':
     pokemones = pokemon_init() # Cargar pokemones
     pygame.init()
     dim = tamPantalla
+    # Musica:
+    pygame.mixer.music.load("sound/introduccion.ogg")
+    pygame.mixer.music.play(-1)
 
     presentacion = Presentacion()
     introduccion = Introduccion(presentacion)
     controles = Controles(introduccion)
+    pygame.mixer.music.stop()
     modoN = modonormal.main("maps/interior.map", introduccion, pokemones, False, False, False)

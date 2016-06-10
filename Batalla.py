@@ -207,7 +207,8 @@ def main(jugador, enemigo, tipo_combate, terminar, matrizPokemon, Ciudades_INIT)
     pantalla.fill(NEGRO)
     reloj = pygame.time.Clock()
     turno_enemigo = False
-
+    pygame.mixer.music.load("sound/batalla.ogg")
+    pygame.mixer.music.play(-1)
     # Marco del duelo:
     marco = pygame.image.load("img/Batalla/marco_batalla.png")
     # Estado del pokemon del jugador:
@@ -330,6 +331,7 @@ def main(jugador, enemigo, tipo_combate, terminar, matrizPokemon, Ciudades_INIT)
                                 print "POKEMONES: "
                                 for pokemon in jugador.pokemones:
                                     print "Nombre: {0}  Vida: {1}  Exp:{2}".format(pokemon[0], pokemon[5], pokemon[3])
+                                pygame.mixer.music.stop()
                                 modonormal.main(jugador.city, not(terminar), matrizPokemon, jugador, (jugador.city.iniciox, jugador.city.inicioy), Ciudades_INIT)
                                 break
                             else:
@@ -346,16 +348,18 @@ def main(jugador, enemigo, tipo_combate, terminar, matrizPokemon, Ciudades_INIT)
                         # ENTRAR EN MENU POKEMON  ENTRAR EN MENU POKEMON
                         pass
                     elif cursor.posicion == cursor.posicion_validas["Huir"]:
-                        terminar = True
-                        # Mostrar aviso de huida:
-                        aviso = pygame.image.load("img/avisos/huir.png")
-                        pantalla.fill(NEGRO)
-                        pantalla.blit(aviso, (0,0))
-                        pygame.display.flip()
-                        reloj.tick(0.6)
-                        reloj.tick(1)
-                        modonormal.main(jugador.city, not(terminar), matrizPokemon, jugador, (jugador.city.iniciox, jugador.city.inicioy), Ciudades_INIT)
-                        break
+                        if not(tipo_combate):
+                            terminar = True
+                            # Mostrar aviso de huida:
+                            aviso = pygame.image.load("img/avisos/huir.png")
+                            pantalla.fill(NEGRO)
+                            pantalla.blit(aviso, (0,0))
+                            pygame.display.flip()
+                            reloj.tick(0.6)
+                            reloj.tick(1)
+                            pygame.mixer.music.stop()
+                            modonormal.main(jugador.city, not(terminar), matrizPokemon, jugador, (jugador.city.iniciox, jugador.city.inicioy), Ciudades_INIT)
+                            break
                     elif cursor.posicion == cursor.posicion_validas["Placaje"]:
                         pokemon_jug.atacar(pokemon_ene, pantalla, tipo_combate) # Atacar Pokemon Enemigo
                         estadoEnemigo.pokemon = pokemon_ene.pokemon # En caso de cambiar de pokemon
@@ -370,6 +374,7 @@ def main(jugador, enemigo, tipo_combate, terminar, matrizPokemon, Ciudades_INIT)
                             reloj.tick(0.6)
                             reloj.tick(1)
                             terminar = True
+                            pygame.mixer.music.stop()
                             modonormal.main(jugador.city, not(terminar), matrizPokemon, jugador, (jugador.city.iniciox, jugador.city.inicioy), Ciudades_INIT)
                             break
                         turno_enemigo = True
@@ -401,6 +406,7 @@ def main(jugador, enemigo, tipo_combate, terminar, matrizPokemon, Ciudades_INIT)
                 pygame.display.flip()
                 reloj.tick(0.6)
                 reloj.tick(1)
+                pygame.mixer.music.stop()
                 modonormal.main(jugador.city, not(terminar), matrizPokemon, jugador, (jugador.city.iniciox, jugador.city.inicioy), Ciudades_INIT)
                 break
 

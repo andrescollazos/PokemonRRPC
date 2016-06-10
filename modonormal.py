@@ -212,6 +212,8 @@ def main(ciudad_inicial, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudad
 	pantalla = pygame.display.set_mode(tamPantalla)
 	pantalla.fill(NEGRO)
 	accion = False # Boton de false
+	pygame.mixer.music.load("sound/modonormal.ogg") # Sonido
+	pygame.mixer.music.play(-1)
 	# Mapas iniciales:
 	# Centro Pokemon
 	if not(Ciudades_INIT):
@@ -574,6 +576,7 @@ def main(ciudad_inicial, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudad
 						jugador.city.iniciox = ciudadVerde.iniciox
 						jugador.city.inicioy = ciudadVerde.inicioy
 						print "POKEMON ENEMIGO: {0}".format(pokemon_enemigo[0])
+						pygame.mixer.music.stop()
 						Batalla.main(jugador, [pokemon_enemigo], 0, not(terminar), matrizPokemon, ciudades)
 						#print "HAS ENTRADO A LA BATALLA POKEMON"
 					elif ciudadVerde.tileset  == "maps/gimnasio.png":
@@ -583,6 +586,7 @@ def main(ciudad_inicial, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudad
 						jugador.city.iniciox = ciudadVerde.iniciox
 						jugador.city.inicioy = ciudadVerde.inicioy
 						print "POKEMON ENEMIGO: {0}".format(pokemon_enemigo[0])
+						pygame.mixer.music.stop()
 						Batalla.main(jugador, [pokemon_enemigo], 0, not(terminar), matrizPokemon, ciudades)
 		#-----------------------------------------------------------------------
 		# CURAR POKEMONES
@@ -654,6 +658,7 @@ def main(ciudad_inicial, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudad
 				jugador.city.inicioy = ciudadVerde.inicioy
 				terminar = True
 				jugador.duelo_Blue = False
+				pygame.mixer.music.stop()
 				Batalla.main(jugador, blue.pokemones, 1, not(terminar), matrizPokemon, ciudades)
 				break
 		# COMBATE CON LIDER DE GIMNASIO BROCK:
@@ -682,6 +687,7 @@ def main(ciudad_inicial, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudad
 				jugador.city.inicioy = ciudadVerde.inicioy
 				terminar = True
 				jugador.duelo_Brock = False
+				pygame.mixer.music.stop()
 				Batalla.main(jugador, Brock.pokemones, 1, not(terminar), matrizPokemon, ciudades)
 
 		pygame.display.flip()
