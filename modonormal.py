@@ -159,6 +159,18 @@ class Jugador(object):
 		posy = ((((self.pos[1] + (tamJugador-32))*city.scale)/32) + city.inicioy)/city.scale
 		return posx, posy
 
+	# Este metodo retorna un booleano, que permite saber si todos los pokemones estan sanos o no
+	def saludPokemon(self):
+		cont = 0
+		for pokemon in self.pokemones:
+			if pokemon[5] == pokemon[6]:
+				cont += 1
+		if cont == len(self.pokemones):
+			return True
+		else:
+			return False
+
+
 class Enemigo(object):
 	def __init__(self, imagen):
 		self.image = pygame.image.load(imagen)
@@ -182,7 +194,7 @@ def pokemonNivel(rango, matrizPokemon):
 
 # MAIN
 #if __name__=='__main__':
-def main(filename, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudades_INIT):
+def main(ciudad_inicial, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudades_INIT):
 	# Parametros iniciales:
 	pygame.init()
 	pantalla = pygame.display.set_mode(tamPantalla)
@@ -219,7 +231,16 @@ def main(filename, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudades_INI
 		tienda = Ciudades_INIT[7]
 
 	# Ciudad verde es una variable que contiene el mapa actual
-	ciudadVerde = Mapa(filename)
+	if type(ciudad_inicial) == str:
+		# Cuando se llama el main() desde el modulo de introducción, el mapa se pasa
+		# como cadena para referencia la primera posicion
+		ciudadVerde = Mapa(ciudad_inicial)
+	else:
+		# Cuando el main() es llamado desde otro modulo, el mapa 'incial' es un objeto
+		# de Mapa, y sobre el ya se han hecho cambios
+		ciudadVerde = ciudad_inicial
+
+
 	if posicion:
 		ciudadVerde.iniciox = posicion[0]
 		ciudadVerde.inicioy = posicion[1]
@@ -452,7 +473,7 @@ def main(filename, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudades_INI
 		if ciudadVerde.map[posy][posx] == 'S':
 			posIant = [posy+1, posx]
 			ciudadverde.reemplazarElem("I", posIant)
-			ciudadVerde = centropokemon #Mapa(filename)
+			ciudadVerde = centropokemon
 			jugador.ubicar(ciudadVerde)
 
 		# Ciudad Verde:
@@ -460,28 +481,28 @@ def main(filename, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudades_INI
 			posIant = [posy+1, posx]
 			if ciudadVerde.tileset == "maps/ruta1.png":
 				ruta1.reemplazarElem("I", posIant)
-			ciudadVerde = ciudadverde # Mapa(filename)
+			ciudadVerde = ciudadverde
 			jugador.ubicar(ciudadVerde)
 
 		# Gimnasio:
 		elif ciudadVerde.map[posy][posx] == 'G':
 			posIant = [posy+1, posx]
 			ciudadverde.reemplazarElem("I", posIant)
-			ciudadVerde = gimnasio #Mapa(filename)
+			ciudadVerde = gimnasio
 			jugador.ubicar(ciudadVerde)
 
 		# Interior de la casa:
 		elif ciudadVerde.map[posy][posx] == 'i':
 			posIant = [posy+1, posx]
 			pueblopaleta.reemplazarElem("I", posIant)
-			ciudadVerde = interior #Mapa(filename)
+			ciudadVerde = interior
 			jugador.ubicar(ciudadVerde)
 
 		# Laboratorio:
 		elif ciudadVerde.map[posy][posx] == 'L':
 			posIant = [posy+1, posx]
 			pueblopaleta.reemplazarElem("I", posIant)
-			ciudadVerde = laboratorio #Mapa(filename)
+			ciudadVerde = laboratorio
 			jugador.ubicar(ciudadVerde)
 
 		# Pueblo paleta:
@@ -494,7 +515,7 @@ def main(filename, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudades_INI
 				posIant = [posy, posx]
 				posIant[0] -= 1
 				ruta1.reemplazarElem("I", posIant)
-			ciudadVerde = pueblopaleta #Mapa(filename)
+			ciudadVerde = pueblopaleta
 			jugador.ubicar(ciudadVerde)
 
 		# Ruta 1:
@@ -507,7 +528,7 @@ def main(filename, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudades_INI
 				elif ciudadVerde.tileset == "maps/pueblopaleta.png":
 					posIant[0] += 1
 					pueblopaleta.reemplazarElem("I", posIant)
-				ciudadVerde = ruta1 #Mapa(filename)
+				ciudadVerde = ruta1
 				jugador.ubicar(ciudadVerde)
 			else:
 				# EN EL CASO DE NO TENER NINGUN POKEMON, MOSTRAR AVISO
@@ -518,7 +539,7 @@ def main(filename, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudades_INI
 		elif ciudadVerde.map[posy][posx] == 'T':
 			posIant = [posy+1, posx]
 			ciudadverde.reemplazarElem("I", posIant)
-			ciudadVerde = tienda #Mapa(filename)
+			ciudadVerde = tienda
 			jugador.ubicar(ciudadVerde)
 
 		# ----------------------------------------------------------------------
@@ -526,7 +547,7 @@ def main(filename, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudades_INI
 		elif ciudadVerde.map[posy][posx] == 'P':
 			# Probabilidad de entrar en batalla -> 25%
 			# Si se detiene sobre un lugar, tiene posibilidad de entrar en batalla
-			if not bool(random.randrange(0, 10)):
+			if not bool(random.randrange(0, 30)):
 				# Cuando el jugador termine la batalla, no podrá entrar nuevamente en batalla
 				# en esa posición.
 				if not((posy, posx) == jugador.ultima_batalla):
@@ -538,8 +559,8 @@ def main(filename, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudades_INI
 						rand = random.randrange(0, len(ruta1.lista_pokemones))
 						pokemon_enemigo = ruta1.lista_pokemones[rand]
 						jugador.city = ruta1 # Retornar a este mapa una vez terminado el duelo
-						jugador.city.iniciox = ciudadVerde.iniciox
-						jugador.city.inicioy = ciudadVerde.inicioy
+						jugador.city.iniciox = ruta1.iniciox
+						jugador.city.inicioy = ruta1.inicioy
 						print "POKEMON ENEMIGO: {0}".format(pokemon_enemigo[0])
 						Batalla.main(jugador, [pokemon_enemigo], 0, not(terminar), matrizPokemon, ciudades)
 						#print "HAS ENTRADO A LA BATALLA POKEMON"
@@ -551,6 +572,16 @@ def main(filename, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudades_INI
 						jugador.city.inicioy = ciudadVerde.inicioy
 						print "POKEMON ENEMIGO: {0}".format(pokemon_enemigo[0])
 						Batalla.main(jugador, [pokemon_enemigo], 0, not(terminar), matrizPokemon, ciudades)
+		#-----------------------------------------------------------------------
+		# CURAR POKEMONES
+		elif ciudadVerde.map[posy][posx] == 'M' and not(jugador.saludPokemon()):
+			aviso = pygame.image.load("img/avisos/salud.png")
+			pantalla.blit(aviso, (0, 0))
+			pygame.display.flip()
+			reloj.tick(0.8)
+			for pokemon in jugador.pokemones:
+				# Vida al maximo:
+				pokemon[5] = pokemon[6]
 
 		reloj.tick(10)
 		jugador.dibujar(pantalla)
