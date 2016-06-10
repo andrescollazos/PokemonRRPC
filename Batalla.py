@@ -170,7 +170,7 @@ class Pokemon(object):
 # Enemigo -> recibe la lista de los pokemones enemigos
 # tipo_combate -> 0: Pokemon salvaje, 1: Entrenador Pokemon
 # terminar -> Indica si se termino o no el juego
-def main(jugador, enemigo, tipo_combate, terminar, matrizPokemon):
+def main(jugador, enemigo, tipo_combate, terminar, matrizPokemon, Ciudades_INIT):
     # Parametros iniciales:
     pygame.init()
     pantalla = pygame.display.set_mode(tamPantalla)
@@ -300,7 +300,7 @@ def main(jugador, enemigo, tipo_combate, terminar, matrizPokemon):
                                 print "POKEMONES: "
                                 for pokemon in jugador.pokemones:
                                     print "Nombre: {0}  Vida: {1}  Exp:{2}".format(pokemon[0], pokemon[5], pokemon[3])
-                                modonormal.main(jugador.city.filename, not(terminar), matrizPokemon, jugador, (jugador.city.iniciox, jugador.city.inicioy))
+                                modonormal.main(jugador.city.filename, not(terminar), matrizPokemon, jugador, (jugador.city.iniciox, jugador.city.inicioy), Ciudades_INIT)
                                 break
                             else:
                                 # Pokemon NO capturado:
@@ -323,7 +323,7 @@ def main(jugador, enemigo, tipo_combate, terminar, matrizPokemon):
                         pantalla.blit(aviso, (0,0))
                         pygame.display.flip()
                         reloj.tick(0.8)
-                        modonormal.main(jugador.city.filename, not(terminar), matrizPokemon, jugador, (jugador.city.iniciox, jugador.city.inicioy))
+                        modonormal.main(jugador.city.filename, not(terminar), matrizPokemon, jugador, (jugador.city.iniciox, jugador.city.inicioy), Ciudades_INIT)
                         break
                     elif cursor.posicion == cursor.posicion_validas["Placaje"]:
                         pokemon_jug.atacar(pokemon_ene) # Atacar Pokemon Enemigo
@@ -334,7 +334,7 @@ def main(jugador, enemigo, tipo_combate, terminar, matrizPokemon):
                             print "GANAS EL DUELO!"
                             #print "TU VIDA: {0} ENEMIGO: {1}".format(pokemon_jug.pokemon[5], pokemon_ene.pokemon[5])
                             terminar = True
-                            modonormal.main(jugador.city.filename, not(terminar), matrizPokemon, jugador, (jugador.city.iniciox, jugador.city.inicioy))
+                            modonormal.main(jugador.city.filename, not(terminar), matrizPokemon, jugador, (jugador.city.iniciox, jugador.city.inicioy), Ciudades_INIT)
                             break
                         turno_enemigo = True
                 if event.key == pygame.K_b:

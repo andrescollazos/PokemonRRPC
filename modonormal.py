@@ -182,7 +182,7 @@ def pokemonNivel(rango, matrizPokemon):
 
 # MAIN
 #if __name__=='__main__':
-def main(filename, terminar, matrizPokemon, Jugador_INIT, posicion = False):
+def main(filename, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudades_INIT):
 	# Parametros iniciales:
 	pygame.init()
 	pantalla = pygame.display.set_mode(tamPantalla)
@@ -190,23 +190,33 @@ def main(filename, terminar, matrizPokemon, Jugador_INIT, posicion = False):
 	accion = False # Boton de false
 	# Mapas iniciales:
 	# Centro Pokemon
-	centropokemon = Mapa("maps/centropokemon.map")
-	# Ciudad Verde
-	ciudadverde = Mapa("maps/ciudadverde.map")
-	# Gimnasio:
-	gimnasio = Mapa("maps/gimnasio.map")
-	gimnasio.lista_pokemones = pokemonNivel([10, 20], matrizPokemon) # Pokemones de nivel 10-20
-	# Interior de la casa:
-	interior = Mapa("maps/interior.map")
-	# Laboratorio Pokemon:
-	laboratorio = Mapa("maps/lab.map")
-	# Pueblo Paleta
-	pueblopaleta = Mapa("maps/pueblopaleta.map")
-	# Ruta 1: Camino entre pueblo paleta y Ciudad Verde
-	ruta1 = Mapa("maps/ruta1.map")
-	ruta1.lista_pokemones = pokemonNivel([3, 8], matrizPokemon) # Pokemones de nivel 3-8
-	# Tienda del juego
-	tienda = Mapa("maps/tienda.map")
+	if not(Ciudades_INIT):
+		centropokemon = Mapa("maps/centropokemon.map")
+		# Ciudad Verde
+		ciudadverde = Mapa("maps/ciudadverde.map")
+		# Gimnasio:
+		gimnasio = Mapa("maps/gimnasio.map")
+		gimnasio.lista_pokemones = pokemonNivel([10, 20], matrizPokemon) # Pokemones de nivel 10-20
+		# Interior de la casa:
+		interior = Mapa("maps/interior.map")
+		# Laboratorio Pokemon:
+		laboratorio = Mapa("maps/lab.map")
+		# Pueblo Paleta
+		pueblopaleta = Mapa("maps/pueblopaleta.map")
+		# Ruta 1: Camino entre pueblo paleta y Ciudad Verde
+		ruta1 = Mapa("maps/ruta1.map")
+		ruta1.lista_pokemones = pokemonNivel([3, 8], matrizPokemon) # Pokemones de nivel 3-8
+		# Tienda del juego
+		tienda = Mapa("maps/tienda.map")
+	else:
+		centropokemon = Ciudades_INIT[0]
+		ciudadverde = Ciudades_INIT[1]
+		gimnasio = Ciudades_INIT[2]
+		interior = Ciudades_INIT[3]
+		laboratorio = Ciudades_INIT[4]
+		pueblopaleta = Ciudades_INIT[5]
+		ruta1 = Ciudades_INIT[6]
+		tienda = Ciudades_INIT[7]
 
 	# Ciudad verde es una variable que contiene el mapa actual
 	ciudadVerde = Mapa(filename)
@@ -522,6 +532,8 @@ def main(filename, terminar, matrizPokemon, Jugador_INIT, posicion = False):
 				if not((posy, posx) == jugador.ultima_batalla):
 					jugador.ultima_batalla = (posy ,posx)
 					terminar = True # Terminar solo esta pantalla
+					# Es necesario tener un vector de ciudades, para poder conocer las posiciones de inicio
+					ciudades = [centropokemon, ciudadverde, gimnasio, interior, laboratorio, pueblopaleta, ruta1, tienda]
 					if ciudadVerde.tileset == "maps/ruta1.png":
 						rand = random.randrange(0, len(ruta1.lista_pokemones))
 						pokemon_enemigo = ruta1.lista_pokemones[rand]
@@ -529,8 +541,16 @@ def main(filename, terminar, matrizPokemon, Jugador_INIT, posicion = False):
 						jugador.city.iniciox = ciudadVerde.iniciox
 						jugador.city.inicioy = ciudadVerde.inicioy
 						print "POKEMON ENEMIGO: {0}".format(pokemon_enemigo[0])
-						Batalla.main(jugador, [pokemon_enemigo], 0, not(terminar), matrizPokemon)
+						Batalla.main(jugador, [pokemon_enemigo], 0, not(terminar), matrizPokemon, ciudades)
 						#print "HAS ENTRADO A LA BATALLA POKEMON"
+					elif ciudadVerde.tileset  == "maps/gimnasio.png":
+						rand = random.randrange(0, len(gimnasio.lista_pokemones))
+						pokemon_enemigo = gimnasio.lista_pokemones[rand]
+						jugador.city = gimnasio
+						jugador.city.iniciox = ciudadVerde.iniciox
+						jugador.city.inicioy = ciudadVerde.inicioy
+						print "POKEMON ENEMIGO: {0}".format(pokemon_enemigo[0])
+						Batalla.main(jugador, [pokemon_enemigo], 0, not(terminar), matrizPokemon, ciudades)
 
 		reloj.tick(10)
 		jugador.dibujar(pantalla)

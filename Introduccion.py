@@ -182,4 +182,4 @@ if __name__=='__main__':
     #presentacion = Presentacion()
     #introduccion = Introduccion(presentacion)
     #controles = Controles(introduccion)
-    modoN = modonormal.main("maps/interior.map", False, pokemones, False)
+    modoN = modonormal.main("maps/interior.map", False, pokemones, False, False, False)
