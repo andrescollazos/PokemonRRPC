@@ -257,8 +257,61 @@ def main(jugador, enemigo, tipo_combate, terminar, matrizPokemon):
                     if cursor.posicion == cursor.posicion_validas["Lucha"]:
                         cursor.posicion = cursor.posicion_validas["Placaje"]
                     elif cursor.posicion == cursor.posicion_validas["Capturar"]:
+                        if tipo_combate == 0: # Contra pokemon salvaje:
+                            # Animacion: Red tirando pokebola
+                            for i in range(8):
+                                if not(i >= 5):
+                                    # Despues de terminar la animacion, se queda esperando en la ultilma
+                                    # posicion, mientras la pokebola termian su recorrido
+                                    intro = pygame.image.load("img/Batalla/intro_red"+str(i)+".png")
+                                else:
+                                    intro = pygame.image.load("img/Batalla/intro_red4.png")
+                                pantalla.blit(intro, (0, 71))
+                                if i >= 3: # La pokebola, empieza su animacion cuando el jugador extiende el brazo
+                                    pokeball = pygame.image.load("img/Batalla/pokeball.png")
+                                    pantalla.blit(pokeball, recorrido_pokeball[i-3])
+                                pygame.display.flip()
+                                reloj.tick(10)
+                                # Resetear pantalla
+                                pantalla.fill(NEGRO)
+                                pantalla.blit(marco, (0, 0))
+                                estado.mostrar(pantalla)
+                                estadoEnemigo.mostrar(pantalla)
+                                cursor.mostrar(pantalla)
+                                pokemon_ene.mostrar(pantalla)
+                                pygame.display.flip()
+                            # Calcular Variable, que permite saber si un pokemon es capturado o no
+                            # A = ((3*Psmax - 2*Psact)*Rc)/(3*Psmax)
+                            # Psmax -> Puntos de vida maximos de un pokemon
+                            # Psact -> Puntos de vida actuales
+                            # Rc -> Ratio de Captura del pokemon
+                            psmax = pokemon_ene.pokemon[6]
+                            psact = pokemon_ene.pokemon[5]
+                            rc = pokemon_ene.pokemon[4]
+                            A = ((3*psmax -2*psact)*rc)/(3*psmax)
+                            if random.randrange(0, 256) <= A:
+                                # Pokemon Capturado:
+                                jugador.pokemones.append(pokemon_ene.pokemon)
+                                aviso = pygame.image.load("img/avisos/pokemon_capturado.png")
+                                pantalla.blit(aviso, (0, 0))
+                                pygame.display.flip()
+                                reloj.tick(0.7)
+                                terminar = True
+                                print "POKEMONES: "
+                                for pokemon in jugador.pokemones:
+                                    print "Nombre: {0}  Vida: {1}  Exp:{2}".format(pokemon[0], pokemon[5], pokemon[3])
+                                modonormal.main(jugador.city.filename, not(terminar), matrizPokemon, jugador, (jugador.city.iniciox, jugador.city.inicioy))
+                                break
+                            else:
+                                # Pokemon NO capturado:
+                                aviso = pygame.image.load("img/avisos/pokemon_no_capturado.png")
+                                pantalla.blit(aviso, (0, 0))
+                                pygame.display.flip()
+                                reloj.tick(0.7)
+                                turno_enemigo = True
+
                         # TIRAR POKEBOLA  TIRAR POKEBOLA  TIRAR POKEBOLA
-                        pass
+                        #pass
                     elif cursor.posicion == cursor.posicion_validas["Pokemon"]:
                         # ENTRAR EN MENU POKEMON  ENTRAR EN MENU POKEMON
                         pass
@@ -272,8 +325,6 @@ def main(jugador, enemigo, tipo_combate, terminar, matrizPokemon):
                         reloj.tick(0.8)
                         modonormal.main(jugador.city.filename, not(terminar), matrizPokemon, jugador, (jugador.city.iniciox, jugador.city.inicioy))
                         break
-                        # HUIR HUIR HUIR HUIR HUIR HUIR HUIR HUIR HUIR HUIR
-                        # pass
                     elif cursor.posicion == cursor.posicion_validas["Placaje"]:
                         pokemon_jug.atacar(pokemon_ene) # Atacar Pokemon Enemigo
                         estadoEnemigo.pokemon = pokemon_ene.pokemon # En caso de cambiar de pokemon
