@@ -170,6 +170,14 @@ class Jugador(object):
 		else:
 			return False
 
+	# Este metodo permite saber si un jugador esta en condiciones de entrar en batalla
+	# Un jugador no esta en condiciones cuando ninguno de sus pokemones tiene PS > 0
+	def puedeCombatir(self):
+		for pokemon in self.pokemones:
+			if pokemon[5] > 0:
+				return True # Retorna verdadero cuando hay al menos un pokemon con PS
+		return False
+
 
 class Enemigo(object):
 	def __init__(self, imagen):
@@ -547,7 +555,7 @@ def main(ciudad_inicial, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudad
 		elif ciudadVerde.map[posy][posx] == 'P':
 			# Probabilidad de entrar en batalla -> 25%
 			# Si se detiene sobre un lugar, tiene posibilidad de entrar en batalla
-			if not bool(random.randrange(0, 30)):
+			if not bool(random.randrange(0, 30)) and jugador.puedeCombatir():
 				# Cuando el jugador termine la batalla, no podrá entrar nuevamente en batalla
 				# en esa posición.
 				if not((posy, posx) == jugador.ultima_batalla):
@@ -559,8 +567,8 @@ def main(ciudad_inicial, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudad
 						rand = random.randrange(0, len(ruta1.lista_pokemones))
 						pokemon_enemigo = ruta1.lista_pokemones[rand]
 						jugador.city = ruta1 # Retornar a este mapa una vez terminado el duelo
-						jugador.city.iniciox = ruta1.iniciox
-						jugador.city.inicioy = ruta1.inicioy
+						jugador.city.iniciox = ciudadVerde.iniciox
+						jugador.city.inicioy = ciudadVerde.inicioy
 						print "POKEMON ENEMIGO: {0}".format(pokemon_enemigo[0])
 						Batalla.main(jugador, [pokemon_enemigo], 0, not(terminar), matrizPokemon, ciudades)
 						#print "HAS ENTRADO A LA BATALLA POKEMON"
