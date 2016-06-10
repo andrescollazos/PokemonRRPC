@@ -56,8 +56,7 @@ def pokemon_init():
     # Ordenar la matriz pokemon de menor a mayor nivel (al aparecer)
     #matrizPokemon = sorted(matrizPokemon, key=lambda pokemon: pokemon[1])
     for i in matrizPokemon:
-        print "vida: {0} ratio {1}".format(i[5], i[4])
-    #    print "Cargando Pokemon: {0}".format(i[0])
+        print "Cargando Pokemon: {0}\t...\tOk".format(i[0])
     return matrizPokemon
 
 # Funcion para mostrar por pantalla una imagen:
@@ -179,7 +178,7 @@ if __name__=='__main__':
     pygame.init()
     dim = tamPantalla
 
-    #presentacion = Presentacion()
-    #introduccion = Introduccion(presentacion)
-    #controles = Controles(introduccion)
-    modoN = modonormal.main("maps/interior.map", False, pokemones, False, False, False)
+    presentacion = Presentacion()
+    introduccion = Introduccion(presentacion)
+    controles = Controles(introduccion)
+    modoN = modonormal.main("maps/interior.map", introduccion, pokemones, False, False, False)

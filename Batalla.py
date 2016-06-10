@@ -352,7 +352,8 @@ def main(jugador, enemigo, tipo_combate, terminar, matrizPokemon, Ciudades_INIT)
                         pantalla.fill(NEGRO)
                         pantalla.blit(aviso, (0,0))
                         pygame.display.flip()
-                        reloj.tick(0.8)
+                        reloj.tick(0.6)
+                        reloj.tick(1)
                         modonormal.main(jugador.city, not(terminar), matrizPokemon, jugador, (jugador.city.iniciox, jugador.city.inicioy), Ciudades_INIT)
                         break
                     elif cursor.posicion == cursor.posicion_validas["Placaje"]:
@@ -367,6 +368,7 @@ def main(jugador, enemigo, tipo_combate, terminar, matrizPokemon, Ciudades_INIT)
                             pantalla.blit(aviso, (0, 0))
                             pygame.display.flip()
                             reloj.tick(0.6)
+                            reloj.tick(1)
                             terminar = True
                             modonormal.main(jugador.city, not(terminar), matrizPokemon, jugador, (jugador.city.iniciox, jugador.city.inicioy), Ciudades_INIT)
                             break
@@ -397,7 +399,8 @@ def main(jugador, enemigo, tipo_combate, terminar, matrizPokemon, Ciudades_INIT)
                 aviso = pygame.image.load("img/avisos/derrota.png")
                 pantalla.blit(aviso, (0, 0))
                 pygame.display.flip()
-                reloj.tick(0.4)
+                reloj.tick(0.6)
+                reloj.tick(1)
                 modonormal.main(jugador.city, not(terminar), matrizPokemon, jugador, (jugador.city.iniciox, jugador.city.inicioy), Ciudades_INIT)
                 break
 

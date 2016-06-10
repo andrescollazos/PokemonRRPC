@@ -112,6 +112,10 @@ class Jugador(object):
 		self.aviso_sin_pokemon = False # Por si el jugador intenta salir del pueblo sin pokemon
 		self.city = False # Para poder retornar del modo Batalla
 		self.ultima_batalla = []# Variable que guarda la posición de la ultima batalla
+		# MISIONES
+		self.oak_conversacion = True # Booleano que informa si se ha hablado con OAk
+		self.duelo_Blue = True
+		self.duelo_Brock = False
 
 	# UBICAR JUGADOR EN LA PANTALLA:
 	def ubicar(self, city):
@@ -185,7 +189,7 @@ class Enemigo(object):
 		self.rect = self.image.get_rect()
 		self.image = pygame.transform.scale(self.image, (tamJugador, tamJugador))
 		self.pokemones = []
-		self.dialogo = False
+		#self.dialogo = False
 
 #-------------------------------------------------------------------------------
 # FUNCIONES
@@ -270,9 +274,6 @@ def main(ciudad_inicial, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudad
 	Brock.pokemones[0][1] = 14 # Geodude nivel 14
 	Brock.pokemones[1][1] = 20 # Onix nivel 20
 
-	# PROFESOR OAK (NPC's)
-	oak_conversacion = True # Booleano que informa si se ha hablado con OAk
-
 	# x, y -> Cantidad de ciclos para pintar el mapa a realizar:
 	x, y = (tamPantalla[0]*ciudadVerde.scale)/tamCuadro, (tamPantalla[1]*ciudadVerde.scale)/tamCuadro
 	left = rigth = up = down = False # Booleanos para saber si el jugador se mueve
@@ -318,18 +319,16 @@ def main(ciudad_inicial, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudad
 				if event.key == pygame.K_a:
 					posx, posy = jugador.transfM(ciudadVerde)
 					# SELECCIONAR EL POKEMON INCIAL
-					if not(oak_conversacion) and jugador.seleccionar_pokemon:
+					if not(jugador.oak_conversacion) and jugador.seleccionar_pokemon:
 						if ciudadVerde.map[posy][posx] == 's':
 							# Seleccionar a squirtle:
 							jugador.pokemones.append(matrizPokemon[6])
-							#jugador.pokemon_default = jugador.pokemones[0]
 							jugador.seleccionar_pokemon = False
 							jugador.aviso_sin_pokemon = False
 							aviso = pygame.image.load("img/avisos/squirtle_seleccionado.jpg")
 							pantalla.blit(aviso, (0, 0))
 							pygame.display.flip()
-							#reloj.tick(0.3)
-							#print "SQUIRTLE SELECCIONADO: \n POKEMONES: {0}".format(jugador.pokemones)
+							reloj.tick(0.3)
 						elif ciudadVerde.map[posy][posx] == 'r':
 							# Seleccionar a charmander
 							jugador.pokemones.append(matrizPokemon[3])
@@ -339,19 +338,16 @@ def main(ciudad_inicial, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudad
 							aviso = pygame.image.load("img/avisos/charmander_seleccionado.jpg")
 							pantalla.blit(aviso, (0, 0))
 							pygame.display.flip()
-							#reloj.tick(0.3)
-							#print "CHARMANDER SELECCIONADO: \n POKEMONES: {0}".format(jugador.pokemones)
+							reloj.tick(0.3)
 						elif ciudadVerde.map[posy][posx] == 'b':
 							# Seleccionar a bulbasaur:
 							jugador.pokemones.append(matrizPokemon[0])
-							#jugador.pokemon_default = jugador.pokemones[0]
 							jugador.seleccionar_pokemon = False
 							jugador.aviso_sin_pokemon = False
 							aviso = pygame.image.load("img/avisos/bulbasaur_seleccionado.jpg")
 							pantalla.blit(aviso, (0, 0))
 							pygame.display.flip()
-							#reloj.tick(0.3)
-							#print "BULBASAUR SELECCIONADO: \n POKEMONES: {0}".format(jugador.pokemones)
+							reloj.tick(0.3)
 
 			# CONTROLES CUANDO EL JUGADOR SUELTA UNA TECLA
 			if event.type == pygame.KEYUP:
@@ -494,10 +490,18 @@ def main(ciudad_inicial, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudad
 
 		# Gimnasio:
 		elif ciudadVerde.map[posy][posx] == 'G':
-			posIant = [posy+1, posx]
-			ciudadverde.reemplazarElem("I", posIant)
-			ciudadVerde = gimnasio
-			jugador.ubicar(ciudadVerde)
+			# Si no se ha cumplido el requisito (Se menciona en la parte de misiones)
+			# No puede accerder al gimnasio
+			if jugador.duelo_Brock:
+				posIant = [posy+1, posx]
+				ciudadverde.reemplazarElem("I", posIant)
+				ciudadVerde = gimnasio
+				jugador.ubicar(ciudadVerde)
+			else:
+				# Mostrar alerta
+				aviso = pygame.image.load("img/avisos/gimnasio.png")
+				pantalla.blit(aviso, (0, 0))
+				pygame.display.flip()
 
 		# Interior de la casa:
 		elif ciudadVerde.map[posy][posx] == 'i':
@@ -586,7 +590,8 @@ def main(ciudad_inicial, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudad
 			aviso = pygame.image.load("img/avisos/salud.png")
 			pantalla.blit(aviso, (0, 0))
 			pygame.display.flip()
-			reloj.tick(0.8)
+			reloj.tick(0.6)
+			reloj.tick(1)
 			for pokemon in jugador.pokemones:
 				# Vida al maximo:
 				pokemon[5] = pokemon[6]
@@ -607,18 +612,18 @@ def main(ciudad_inicial, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudad
 		if ciudadVerde.tileset == "maps/laboratorio.png":
 			posx, posy = jugador.transfM(ciudadVerde)
 			# Conversacion con el profesor OAK (solo se tiene una vez)
-			if ciudadVerde.map[posy][posx] == 'o' and oak_conversacion:
+			if ciudadVerde.map[posy][posx] == 'o' and jugador.oak_conversacion:
 				aviso = pygame.image.load("img/avisos/entregar_pokemon.png")
 				aviso2 = pygame.image.load("img/avisos/entregar_pokemon2.png")
 				pantalla.blit(aviso, (0, 0))
 				pygame.display.flip()
-				#reloj.tick(0.1)
+				reloj.tick(0.1)
 				pantalla.blit(aviso2, (0, 0))
 				pygame.display.flip()
-				#reloj.tick(0.1)
-				oak_conversacion = False
+				reloj.tick(0.1)
+				jugador.oak_conversacion = False
 			# Seleccionar pokemon inicial:
-			if not(oak_conversacion):
+			if not(jugador.oak_conversacion):
 				if ciudadVerde.map[posy][posx] == 's' and jugador.seleccionar_pokemon:
 					aviso = pygame.image.load("img/avisos/seleccionar_squirtle.png")
 					pantalla.blit(aviso, (354, 16))
@@ -631,11 +636,52 @@ def main(ciudad_inicial, terminar, matrizPokemon, Jugador_INIT, posicion, Ciudad
 					aviso = pygame.image.load("img/avisos/seleccionar_bulbasaur.png")
 					pantalla.blit(aviso, (354, 16))
 					pygame.display.flip()
-			if blue.dialogo:
+
+		# ----------------------------------------------------------------------
+		# MISIONES
+
+		# COMBATE CON BLUE (PRIMER COMBATE)
+		# Requisitos: - Tener el primer pokemon
+		if ciudadVerde.tileset == "maps/laboratorio.png" and jugador.duelo_Blue:
+			if len(jugador.pokemones) > 0:
+				ciudades = [centropokemon, ciudadverde, gimnasio, interior, laboratorio, pueblopaleta, ruta1, tienda]
 				aviso = pygame.image.load("img/avisos/duelo_Blue.png")
 				pantalla.blit(aviso, (0, 0))
-				reloj.tick(0.2)
+				pygame.display.flip()
+				reloj.tick(0.5)
+				jugador.city = laboratorio # Retornar a este mapa una vez terminado el duelo
+				jugador.city.iniciox = ciudadVerde.iniciox
+				jugador.city.inicioy = ciudadVerde.inicioy
+				terminar = True
+				jugador.duelo_Blue = False
+				Batalla.main(jugador, blue.pokemones, 1, not(terminar), matrizPokemon, ciudades)
+				break
+		# COMBATE CON LIDER DE GIMNASIO BROCK:
+		# Requisitos: - Tener dos pokemones, que como minimo uno de ellos sea nivel 15 y el otro nivel 20
+		# Verificar requisito:
+		contadorRequisito = 0
+		if len(jugador.pokemones) >= 2:
+			for pokem in jugador.pokemones:
+				if pokem[1] >= 20:
+					contadorRequisito += 1
+				elif pokem[1] >= 15:
+					contadorRequisito += 1
+			if contadorRequisito >= 2:
+				jugador.duelo_Brock = True
 
-		# Teclas de accion:
+		if ciudadVerde.tileset == "maps/gimnasio.png" and jugador.duelo_Brock:
+			posx, posy = jugador.transfM(ciudadVerde)
+			if ciudadVerde[posy][posx] == 'B' and jugador.puedeCombatir():
+				ciudades = [centropokemon, ciudadverde, gimnasio, interior, laboratorio, pueblopaleta, ruta1, tienda]
+				aviso = pygame.image.load("img/avisos/duelo_Brock.png")
+				pantalla.blit(aviso, (0, 0))
+				pygame.display.flip()
+				reloj.tick(0.35)
+				jugador.city = gimnasio # Retornar a este mapa una vez terminado el duelo
+				jugador.city.iniciox = ciudadVerde.iniciox
+				jugador.city.inicioy = ciudadVerde.inicioy
+				terminar = True
+				jugador.duelo_Brock = False
+				Batalla.main(jugador, Brock.pokemones, 1, not(terminar), matrizPokemon, ciudades)
 
 		pygame.display.flip()
