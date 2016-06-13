@@ -1,5 +1,5 @@
 # POKEMON ROJO FUEGO RRPC
-### PROYECTO FINAL DE COMPUTACIÓN GRAFICA - UTP
+#### PROYECTO FINAL DE COMPUTACIÓN GRAFICA - UTP
 
 # REQUISITOS:
 
@@ -7,17 +7,20 @@ Tener instalado python (2.7) y pygame
 
 # IMAGENES:
 ![Introduccion] (img/screenshot/s1.png)
+
 ![Mundo Pokemon] (img/screenshot/s2.png)
+
 ![Batalla] (img/screenshot/s3.png)
 
 # JUGAR:
 
-Desde terminarl, en el directorio del juego PokemonRRPC/ ejecutar:
+Desde la terminal, en el directorio del juego PokemonRRPC/ ejecutar:
 
 ./JUEGO.sh
+
 ![Comando] (img/screenshot/s4.png)
 
-# Licence
+# LICENCIA
 ####
 El CODIGO FUENTE es publicado bajo la licencia [GNU GENERAL PUBLIC LICENSE Version 
 3](LICENSE)
