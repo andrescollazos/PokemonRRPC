@@ -1,17 +1,29 @@
-Ingeniería de Sistemas y Computación
-Universidad Tecnologica de Pereira
-Proyecto final de computación Grafica 
+# POKEMON ROJO FUEGO RRPC
+### PROYECTO FINAL DE COMPUTACIÓN GRAFICA - UTP
 
-Se pide desarrollar un juego, que contenga entre otras cosas:
-20%	1) Documento de diseño
-10%	2) Versionamiento Github
-	3) Menu inicial(Inicio, tutorial, salir) y de pausa(configurar 
-teclado, continuar, salir)
-	4) 5 Modificadores de juego
-	   5 Tipos de enemigos
-	   1 Jefe de nivel
-	5) 1 nivel de 2 subniveles
-	6) Sonido, musica, sprites(animados), linea de vida, puntaje
-	7) Introduccion y final (historia)
-	8) Jugabilidad
-	9) Originalidad
+# REQUISITOS:
+
+Tener instalado python (2.7) y pygame
+
+# IMAGENES:
+![Introduccion] (img/screenshot/s1.png)
+![Mundo Pokemon] (img/screenshot/s2.png)
+![Batalla] (img/screenshot/s3.png)
+
+# JUGAR:
+
+Desde terminarl, en el directorio del juego PokemonRRPC/ ejecutar:
+
+./JUEGO.sh
+![Comando] (img/screenshot/s4.png)
+
+# Licence
+####
+El CODIGO FUENTE es publicado bajo la licencia [GNU GENERAL PUBLIC LICENSE Version 
+3](LICENSE)
+
+# ADVERTENCIA
+LOS SPRITES UTILIZADOS SON PARTE DE LOS JUEGOS ORIGINALES DE POKEMON Y POR ENDE TIENEN 
+DERECHOS DE AUTOR
+
+
