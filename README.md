@@ -6,11 +6,11 @@
 Tener instalado python (2.7) y pygame
 
 # IMAGENES:
-![Introduccion] (img/screenshot/s1.png)
+![Introduccion](img/screenshot/s1.png)
 
-![Mundo Pokemon] (img/screenshot/s2.png)
+![Mundo Pokemon](img/screenshot/s2.png)
 
-![Batalla] (img/screenshot/s3.png)
+![Batalla](img/screenshot/s3.png)
 
 # JUGAR:
 
@@ -18,7 +18,7 @@ Desde la terminal, en el directorio del juego PokemonRRPC/ ejecutar:
 
 ./JUEGO.sh
 
-![Comando] (img/screenshot/s4.png)
+![Comando](img/screenshot/s4.png)
 
 # LICENCIA
 ####
